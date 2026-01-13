@@ -1,0 +1,797 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> GI28 Aether</title>
+    <style>
+:root {
+    --bg: #050505;
+    --primary: #00f2ff;
+    --secondary: #bd00ff;
+    --glass: rgba(20, 20, 25, 0.75);
+    --border: rgba(255, 255, 255, 0.15);
+    --text: #ffffff;
+    --text-muted: #8b9bb4;
+    --dock-bg: rgba(10, 10, 10, 0.6);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+
+body {
+    margin: 0; padding: 0;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    height: 100vh; width: 100vw;
+}
+
+canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; touch-action: none; }
+
+/* --- FLOATING DOCK --- */
+.dock-container {
+    position: fixed; bottom: 30px; left: 0; width: 100%;
+    display: flex; justify-content: center; z-index: 1000;
+    pointer-events: none; /* Let clicks pass through empty space */
+}
+
+.dock {
+    pointer-events: auto;
+    background: var(--dock-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 24px;
+    display: flex; align-items: center; gap: 15px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dock:hover { transform: scale(1.02); }
+
+.dock-item {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; position: relative;
+}
+
+.dock-item svg { width: 22px; fill: white; opacity: 0.8; }
+.dock-item:hover { background: rgba(255,255,255,0.15); transform: translateY(-5px); }
+.dock-item:active { transform: scale(0.95); }
+.dock-item.active { background: var(--primary); }
+.dock-item.active svg { fill: black; }
+
+.dock-separator { width: 1px; height: 24px; background: rgba(255,255,255,0.1); }
+
+/* Tooltip */
+.dock-item::after {
+    content: attr(data-tooltip);
+    position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+    background: black; padding: 4px 8px; border-radius: 4px; font-size: 11px;
+    opacity: 0; transition: 0.2s; pointer-events: none; white-space: nowrap;
+}
+.dock-item:hover::after { opacity: 1; top: -45px; }
+
+/* --- SETTINGS PANEL --- */
+.panel {
+    position: fixed; top: 20px; right: 20px;
+    width: 340px; max-height: calc(100vh - 120px);
+    background: var(--glass);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    z-index: 900;
+    display: flex; flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.panel.hidden { opacity: 0; pointer-events: none; transform: translateX(20px); }
+
+.panel-header {
+    padding: 16px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-weight: 800; letter-spacing: 1px; font-size: 12px; color: var(--primary);
+}
+
+.close-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+
+.panel-content { padding: 20px; overflow-y: auto; }
+
+/* Scrollbar */
+.panel-content::-webkit-scrollbar { width: 4px; }
+.panel-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+/* Controls */
+.section-title {
+    font-size: 10px; font-weight: 700; color: var(--text-muted);
+    margin: 20px 0 10px 0; letter-spacing: 1px;
+}
+.section-title:first-child { margin-top: 0; }
+
+.control-row { margin-bottom: 12px; }
+.control-row label { display: block; font-size: 11px; color: #ccc; margin-bottom: 5px; }
+
+.control-row-dual { display: flex; gap: 10px; margin-bottom: 12px; }
+.control-row-dual div { flex: 1; }
+
+.checkbox-row { display: flex; justify-content: space-between; align-items: center; }
+
+input[type="range"] {
+    width: 100%; -webkit-appearance: none; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px; background: var(--primary); border-radius: 50%; cursor: pointer;
+}
+
+input[type="text"] {
+    width: 70%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+    color: white; padding: 10px; border-radius: 6px; font-family: 'Inter';
+}
+
+select {
+    width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+    color: white; padding: 8px; border-radius: 6px;
+}
+
+.button-grid { display: flex; gap: 8px; margin-bottom: 10px; }
+.btn, .btn-small {
+    flex: 1; padding: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.05);
+    color: white; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600;
+    transition: 0.2s;
+}
+.btn:hover { background: rgba(255,255,255,0.1); }
+.btn.active { background: var(--primary); color: black; border-color: var(--primary); }
+.btn-small { padding: 10px; width: 28%; }
+
+/* --- STATS & REC --- */
+.hud-stats {
+    position: absolute; top: 20px; left: 20px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text-muted); pointer-events: none; z-index: 500;
+}
+#rec-indicator {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(255,0,0,0.2); border: 1px solid red; color: red;
+    padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold;
+    display: flex; align-items: center; gap: 8px; z-index: 500;
+}
+.hidden { display: none !important; }
+.red-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.2; } }
+
+/* Helpers */
+.file-input { display: none; }
+.btn-file {
+    display: block; width: 100%; padding: 12px; background: rgba(255,255,255,0.05);
+    border: 1px dashed var(--border); text-align: center; border-radius: 6px;
+    font-size: 11px; cursor: pointer; color: var(--text-muted);
+}
+.btn-file:hover { color: white; border-color: white; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <canvas id="canvas1"></canvas>
+    
+    <div style="display:none;">
+        <canvas id="helperCanvas"></canvas>
+        <video id="helperVideo" loop muted playsinline crossorigin="anonymous"></video>
+    </div>
+
+    <div class="hud-stats">
+        <span id="fps-stat">60 FPS</span> | <span id="particle-stat">0 Particles</span>
+    </div>
+
+    <div id="rec-indicator" class="hidden">
+        <div class="red-dot"></div> REC <span id="rec-time">00:00</span>
+    </div>
+
+    <div id="settings-panel" class="panel hidden" onclick="event.stopPropagation()">
+        <div class="panel-header">
+            <span><span>⚙️</span> ENGINE CONFIGURATION</span>
+            <button class="close-btn" onclick="ui.toggleSettings()">×</button>
+        </div>
+        
+        <div class="panel-content">
+            <div class="section-title">INPUT SOURCE</div>
+            <div class="button-grid">
+                <button class="btn active" onclick="app.setMode('text', this)">Text</button>
+                <button class="btn" onclick="app.setMode('image', this)">Image</button>
+                <button class="btn" onclick="app.setMode('video', this)">Video</button>
+                <button class="btn" onclick="app.setMode('cam', this)">Webcam</button>
+            </div>
+            
+            <div id="input-text-container" class="input-row">
+                <input type="text" id="textInput" value="AETHER" placeholder="Type something..." onkeyup="if(event.key === 'Enter') app.refresh()">
+                <button class="btn-small" onclick="app.refresh()">Update</button>
+            </div>
+            
+            <div id="input-file-container" class="input-row hidden">
+                <input type="file" id="fileInput" class="file-input" accept="image/*,video/*">
+                <label for="fileInput" class="btn-file">📂 Upload Media</label>
+            </div>
+
+            <div class="section-title">PHYSICS & FORCES</div>
+            
+            <div class="control-row">
+                <label>Particle Density (Gap)</label>
+                <input type="range" id="gap" min="3" max="20" value="4" oninput="app.updateConfig('gap', this.value)">
+            </div>
+            
+            <div class="control-row">
+                <label>Base Size</label>
+                <input type="range" id="size" min="0.5" max="10" value="1.5" step="0.1" oninput="app.updateConfig('baseSize', this.value)">
+            </div>
+            
+            <div class="control-row">
+                <label>Friction (Fluidity)</label>
+                <input type="range" id="friction" min="0.50" max="0.99" value="0.90" step="0.01" oninput="app.updateConfig('friction', this.value)">
+            </div>
+
+            <div class="control-row">
+                <label>Return Speed (Ease)</label>
+                <input type="range" id="ease" min="0.01" max="0.3" value="0.1" step="0.01" oninput="app.updateConfig('ease', this.value)">
+            </div>
+
+            <div class="control-row-dual">
+                <div>
+                    <label>Gravity X</label>
+                    <input type="range" min="-2" max="2" value="0" step="0.1" oninput="app.updateConfig('gravityX', this.value)">
+                </div>
+                <div>
+                    <label>Gravity Y</label>
+                    <input type="range" min="-2" max="2" value="0" step="0.1" oninput="app.updateConfig('gravityY', this.value)">
+                </div>
+            </div>
+
+            <div class="section-title">VISUALS & COLORS</div>
+            
+            <div class="control-row">
+                <label>Shape</label>
+                <select id="shapeSelect" onchange="app.updateConfig('shape', this.value)">
+                    <option value="circle">Circle</option>
+                    <option value="square">Square</option>
+                    <option value="pentagon">Pentagon</option>
+                    <option value="line">Line</option>
+                </select>
+            </div>
+
+            <div class="control-row checkbox-row">
+                <label>Motion Trails</label>
+                <input type="checkbox" onchange="app.updateConfig('trails', this.checked)">
+            </div>
+
+            <div class="control-row checkbox-row">
+                <label>Connect Particles (Heavy)</label>
+                <input type="checkbox" onchange="app.updateConfig('connections', this.checked)">
+            </div>
+
+            <div class="control-row">
+                <label>Color Mode</label>
+                <select onchange="app.updateConfig('colorMode', this.value)">
+                    <option value="solid">Solid White</option>
+                    <option value="original">Source Color</option>
+                    <option value="rainbow">Rainbow</option>
+                    <option value="gradient">Cyber Gradient</option>
+                </select>
+            </div>
+
+            <div class="section-title">INTERACTION</div>
+            <div class="button-grid">
+                <button class="btn active" id="mode-repulse" onclick="app.setInteraction('repulse')">Push</button>
+                <button class="btn" id="mode-attract" onclick="app.setInteraction('attract')">Pull</button>
+                <button class="btn" id="mode-bubble" onclick="app.setInteraction('bubble')">Bubble</button>
+            </div>
+            
+            <div class="control-row">
+                <label>Mouse Radius</label>
+                <input type="range" min="1000" max="10000" value="3000" step="500" oninput="app.updateConfig('mouseRadius', this.value)">
+            </div>
+        </div>
+    </div>
+
+    <div class="dock-container">
+        <div class="dock">
+            <div class="dock-item" onclick="ui.toggleSettings()" data-tooltip="Settings">
+                <svg viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path></svg>
+            </div>
+            
+            <div class="dock-separator"></div>
+
+            <div class="dock-item" onclick="app.export('png')" data-tooltip="Snapshot">
+                <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"></path></svg>
+            </div>
+            
+            <div class="dock-item" id="dock-rec" onclick="app.toggleRecord()" data-tooltip="Record Video">
+                <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path></svg>
+            </div>
+            
+            <div class="dock-separator"></div>
+
+            <div class="dock-item" onclick="app.randomize()" data-tooltip="Surprise Me">
+               <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <script>
+/**
+ * AETHER STUDIO ULTRA - PATCHED v1.2
+ * Advanced Canvas Particle Engine
+ */
+
+const canvas = document.getElementById('canvas1');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const helperCanvas = document.getElementById('helperCanvas');
+const helperCtx = helperCanvas.getContext('2d', { willReadFrequently: true });
+const helperVideo = document.getElementById('helperVideo');
+
+// --- CONFIGURATION ---
+const config = {
+    gap: 4,
+    baseSize: 1.5,
+    friction: 0.90,
+    ease: 0.1,
+    gravityX: 0,
+    gravityY: 0,
+    mouseRadius: 3000,
+    interaction: 'repulse', // repulse, attract, bubble
+    shape: 'circle', // circle, square, pentagon, line
+    colorMode: 'solid', // solid, original, rainbow, gradient
+    trails: false,
+    connections: false,
+    width: window.innerWidth,
+    height: window.innerHeight
+};
+
+let particles = [];
+let animationId;
+let sourceMode = 'text'; // text, image, video, cam
+let mediaSource = null;
+let frameCount = 0; // For throttling
+
+// --- MOUSE STATE ---
+const mouse = { x: 0, y: 0, isActive: false };
+
+// --- PARTICLE CLASS ---
+class Particle {
+    constructor(x, y, color) {
+        this.originX = x;
+        this.originY = y;
+        this.x = Math.random() * config.width;
+        this.y = Math.random() * config.height;
+        this.vx = 0;
+        this.vy = 0;
+        this.color = color;
+        this.hue = Math.random() * 360;
+    }
+
+    update() {
+        // 1. Interaction Physics
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const distSq = dx * dx + dy * dy;
+        
+        let forceX = 0;
+        let forceY = 0;
+
+        if (mouse.isActive && distSq < config.mouseRadius) {
+            // Optimization: removed Math.sqrt where possible
+            const dist = Math.sqrt(distSq); 
+            const force = (config.mouseRadius - distSq) / config.mouseRadius;
+            const angle = Math.atan2(dy, dx);
+            const power = force * 20;
+
+            if (config.interaction === 'repulse') {
+                forceX = -Math.cos(angle) * power;
+                forceY = -Math.sin(angle) * power;
+            } else if (config.interaction === 'attract') {
+                forceX = Math.cos(angle) * power;
+                forceY = Math.sin(angle) * power;
+            } else if (config.interaction === 'bubble') {
+                this.x -= Math.cos(angle) * 5;
+                this.y -= Math.sin(angle) * 5;
+            }
+            
+            this.vx += forceX;
+            this.vy += forceY;
+        }
+
+        // 2. Return to Origin Physics
+        this.vx += (this.originX - this.x) * config.ease;
+        this.vy += (this.originY - this.y) * config.ease;
+        
+        // 3. Constant Forces
+        this.vx += parseFloat(config.gravityX);
+        this.vy += parseFloat(config.gravityY);
+
+        // 4. Friction
+        this.vx *= config.friction;
+        this.vy *= config.friction;
+
+        // 5. Update Position
+        this.x += this.vx;
+        this.y += this.vy;
+    }
+
+    draw() {
+        let s = config.baseSize;
+        if(config.interaction === 'bubble' && mouse.isActive) {
+             const dx = mouse.x - this.x;
+             const dy = mouse.y - this.y;
+             if(dx*dx+dy*dy < config.mouseRadius) s *= 3;
+        }
+
+        // Color Logic
+        if (config.colorMode === 'rainbow') {
+            ctx.fillStyle = `hsl(${this.x * 0.1 + this.y * 0.1}, 80%, 60%)`;
+        } else if (config.colorMode === 'gradient') {
+            ctx.fillStyle = `hsl(${this.hue}, 100%, 50%)`;
+            this.hue += 2; // Optimization: integer increment
+        } else {
+            ctx.fillStyle = this.color;
+        }
+
+        // Optimization: Use fillRect for squares (faster)
+        if (config.shape === 'square') {
+            ctx.fillRect(this.x, this.y, s*2, s*2);
+            return;
+        }
+
+        ctx.beginPath();
+        if (config.shape === 'circle') {
+            ctx.arc(this.x, this.y, s, 0, Math.PI * 2);
+        } else if (config.shape === 'line') {
+            ctx.strokeStyle = ctx.fillStyle;
+            ctx.lineWidth = s;
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(this.x - this.vx * 2, this.y - this.vy * 2); 
+            ctx.stroke();
+            return; // Exit early
+        } else {
+            // Pentagon
+            for(let i=0; i<5; i++) {
+                ctx.lineTo(this.x + s * Math.cos(i * 2 * Math.PI / 5), this.y + s * Math.sin(i * 2 * Math.PI / 5));
+            }
+        }
+        ctx.fill();
+    }
+}
+
+// --- ENGINE CONTROLLER ---
+const app = {
+    activeStream: null, // Track webcam stream to stop it properly
+
+    init: () => {
+        app.resize();
+        window.addEventListener('resize', app.resize);
+        app.setupInputs();
+        app.refresh();
+        app.animate();
+    },
+
+    resize: () => {
+        config.width = window.innerWidth;
+        config.height = window.innerHeight;
+        canvas.width = config.width;
+        canvas.height = config.height;
+        helperCanvas.width = config.width;
+        helperCanvas.height = config.height;
+        // Force refresh even in video mode to remap grid
+        app.processMedia(true); 
+    },
+
+    setupInputs: () => {
+        // Mouse / Touch
+        canvas.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.isActive = true; });
+        canvas.addEventListener('mouseleave', () => mouse.isActive = false);
+        canvas.addEventListener('touchstart', e => { 
+            e.preventDefault(); mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; mouse.isActive = true; 
+        }, {passive:false});
+        canvas.addEventListener('touchmove', e => { 
+            e.preventDefault(); mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; 
+        }, {passive:false});
+        canvas.addEventListener('touchend', () => mouse.isActive = false);
+
+        // File Input
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const url = URL.createObjectURL(file);
+            if(file.type.startsWith('image')) {
+                const img = new Image();
+                img.onload = () => { mediaSource = img; app.refresh(); };
+                img.src = url;
+            } else if(file.type.startsWith('video')) {
+                helperVideo.src = url;
+                helperVideo.play();
+                mediaSource = helperVideo;
+                helperVideo.onloadeddata = () => app.refresh();
+            }
+        });
+    },
+
+    // --- MAIN LOGIC ---
+    refresh: () => {
+        if(sourceMode === 'text') app.processText();
+        else app.processMedia();
+    },
+
+    processText: () => {
+        let text = document.getElementById('textInput').value.trim();
+        if(text === '') text = 'AETHER'; // Fallback
+        
+        const fontSize = Math.min(config.width * 0.15, 200);
+        helperCtx.clearRect(0,0, config.width, config.height);
+        helperCtx.font = `900 ${fontSize}px Inter, sans-serif`;
+        helperCtx.textAlign = 'center';
+        helperCtx.textBaseline = 'middle';
+        helperCtx.fillStyle = 'white';
+        helperCtx.fillText(text, config.width/2, config.height/2);
+        app.scanParticles();
+    },
+
+    processMedia: (forceRescan = false) => {
+        if(!mediaSource) return;
+        helperCtx.clearRect(0,0, config.width, config.height);
+        
+        // Fix: Use naturalWidth for images, videoWidth for videos
+        const mw = mediaSource.videoWidth || mediaSource.naturalWidth || 1; 
+        const mh = mediaSource.videoHeight || mediaSource.naturalHeight || 1;
+        
+        const ratio = Math.max(config.width / mw, config.height / mh);
+        const dw = mw * ratio;
+        const dh = mh * ratio;
+        
+        helperCtx.drawImage(mediaSource, (config.width-dw)/2, (config.height-dh)/2, dw, dh);
+        
+        // Scan if text/image, or if this is a resize event, or first video load
+        if(sourceMode !== 'video' && sourceMode !== 'cam' || forceRescan || particles.length === 0) {
+            app.scanParticles();
+        }
+    },
+
+    scanParticles: () => {
+        particles = [];
+        const pixels = helperCtx.getImageData(0,0, config.width, config.height).data;
+        
+        // Fix: Ensure gap is an integer to avoid infinite loops
+        let gap = parseInt(config.gap);
+        if(gap < 2) gap = 2; // Hard floor safety
+
+        // Safety: Calculate estimated particles
+        const estParticles = (config.width * config.height) / (gap * gap);
+        if(estParticles > 40000) {
+            console.warn("Too many particles! Adjusting gap automatically.");
+            gap = Math.ceil(Math.sqrt((config.width * config.height) / 30000));
+            document.getElementById('gap').value = gap;
+            config.gap = gap;
+        }
+        
+        for(let y=0; y<config.height; y+=gap) {
+            for(let x=0; x<config.width; x+=gap) {
+                const idx = (y * config.width + x) * 4;
+                if(pixels[idx+3] > 128) {
+                    const col = `rgb(${pixels[idx]}, ${pixels[idx+1]}, ${pixels[idx+2]})`;
+                    particles.push(new Particle(x, y, col));
+                }
+            }
+        }
+        document.getElementById('particle-stat').innerText = `${particles.length} Particles`;
+    },
+
+    // Optimized: Only run getImageData periodically
+    updateColors: () => {
+        if(!mediaSource) return;
+        
+        // Draw video frame to hidden canvas
+        app.processMedia(); // This draws the image
+        
+        // Throttle: Read pixels only every 4th frame to prevent 60FPS lag
+        if(frameCount % 4 !== 0) return;
+
+        const pixels = helperCtx.getImageData(0,0, config.width, config.height).data;
+        
+        particles.forEach(p => {
+            const x = Math.floor(p.originX);
+            const y = Math.floor(p.originY);
+            if(x>=0 && x<config.width && y>=0 && y<config.height) {
+                const idx = (y * config.width + x) * 4;
+                p.color = `rgb(${pixels[idx]}, ${pixels[idx+1]}, ${pixels[idx+2]})`;
+            }
+        });
+    },
+
+    animate: () => {
+        frameCount++;
+        
+        // Visual Trails
+        if(config.trails) {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.2)';
+            ctx.fillRect(0,0, config.width, config.height);
+        } else {
+            ctx.clearRect(0,0, config.width, config.height);
+        }
+
+        // Update video colors?
+        if((sourceMode === 'video' || sourceMode === 'cam') && mediaSource) {
+            app.updateColors();
+        }
+
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+
+        if(config.connections) {
+            app.drawConnections();
+        }
+
+        animationId = requestAnimationFrame(app.animate);
+    },
+
+    drawConnections: () => {
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 0.5;
+        // Optimization: Step larger to save CPU
+        for(let i=0; i<particles.length; i+=15) { 
+            const p1 = particles[i];
+            const dx = mouse.x - p1.x;
+            const dy = mouse.y - p1.y;
+            if(dx*dx+dy*dy < 20000) { 
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.stroke();
+            }
+        }
+    },
+
+    // --- UI HELPERS ---
+    setMode: (mode, btn) => {
+        // Fix: Stop webcam stream if switching away
+        if(app.activeStream) {
+            app.activeStream.getTracks().forEach(track => track.stop());
+            app.activeStream = null;
+        }
+
+        sourceMode = mode;
+        document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        document.getElementById('input-text-container').classList.toggle('hidden', mode !== 'text');
+        document.getElementById('input-file-container').classList.toggle('hidden', mode === 'text' || mode === 'cam');
+        
+        if(mode === 'cam') app.startCam();
+        else if (mode === 'text') app.refresh();
+        else {
+            particles = []; 
+            document.getElementById('particle-stat').innerText = `0 Particles`;
+        }
+    },
+
+    startCam: () => {
+        navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
+            app.activeStream = stream; // Save ref
+            helperVideo.srcObject = stream;
+            helperVideo.play();
+            mediaSource = helperVideo;
+        }).catch(e => {
+            alert("Camera access denied or unavailable.");
+            console.error(e);
+        });
+    },
+
+    updateConfig: (key, val, skipRefresh = false) => {
+        // Fix: Force integer for gap to prevent string math
+        if(key === 'gap') val = parseInt(val);
+        else val = isNaN(val) ? val : parseFloat(val);
+        
+        config[key] = val;
+        
+        if(key === 'gap' && !skipRefresh) app.refresh();
+    },
+
+    setInteraction: (mode) => {
+        config.interaction = mode;
+        document.querySelectorAll('[id^="mode-"]').forEach(b => b.classList.remove('active'));
+        document.getElementById(`mode-${mode}`).classList.add('active');
+    },
+
+    randomize: () => {
+        const rGap = Math.floor(Math.random()*6)+3;
+        const rSize = Math.random()*3+0.5;
+        const rFric = 0.85 + Math.random()*0.1;
+
+        // Update DOM
+        document.getElementById('gap').value = rGap;
+        document.getElementById('size').value = rSize;
+        document.getElementById('friction').value = rFric;
+        
+        // Batch Updates (skip refresh)
+        app.updateConfig('gap', rGap, true);
+        app.updateConfig('baseSize', rSize, true);
+        app.updateConfig('friction', rFric, true);
+        
+        // Random Interaction
+        const modes = ['repulse', 'attract', 'bubble'];
+        app.setInteraction(modes[Math.floor(Math.random()*modes.length)]);
+        
+        // Single Refresh
+        app.refresh();
+    },
+
+    // --- EXPORT ---
+    export: () => {
+        const link = document.createElement('a');
+        link.download = `Aether_Snap_${Date.now()}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+    },
+    
+    recording: false,
+    mediaRecorder: null,
+    chunks: [],
+    
+    toggleRecord: () => {
+        if(app.recording) {
+            app.mediaRecorder.stop();
+            app.recording = false;
+            document.getElementById('rec-indicator').classList.add('hidden');
+            document.getElementById('dock-rec').classList.remove('active');
+        } else {
+            const stream = canvas.captureStream(60);
+            
+            // Fix: Check for supported MIME types (Safari fix)
+            const mimeOptions = [
+                "video/webm; codecs=vp9",
+                "video/webm",
+                "video/mp4"
+            ];
+            const mimeType = mimeOptions.find(type => MediaRecorder.isTypeSupported(type)) || "";
+
+            try {
+                app.mediaRecorder = new MediaRecorder(stream, { mimeType });
+            } catch (e) {
+                console.error("MediaRecorder Error:", e);
+                alert("Recording not supported on this browser.");
+                return;
+            }
+
+            app.chunks = [];
+            app.mediaRecorder.ondataavailable = e => app.chunks.push(e.data);
+            app.mediaRecorder.onstop = e => {
+                const blob = new Blob(app.chunks, { 'type' : mimeType || 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Aether_Rec_${Date.now()}.${mimeType.includes('mp4') ? 'mp4' : 'webm'}`;
+                a.click();
+            };
+            app.mediaRecorder.start();
+            app.recording = true;
+            document.getElementById('rec-indicator').classList.remove('hidden');
+            document.getElementById('dock-rec').classList.add('active');
+        }
+    }
+};
+
+const ui = {
+    toggleSettings: () => {
+        document.getElementById('settings-panel').classList.toggle('hidden');
+    }
+}
+
+// Start
+app.init();
+
+    </script>
+</body>
+</html>
