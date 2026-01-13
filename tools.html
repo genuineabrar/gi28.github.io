@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GI28 Tools</title>
+<meta name="description" content="Explore all free Instagram tools by GI28. Username tools, QR generators, profile cards & more. No login. No watermark.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="header.css">
+<style>
+/* =============================
+   GI28 – TOOLS PAGE
+============================= */
+
+:root {
+  --bg-dark: #050507;
+  --panel: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --cyan: #00f2ea;
+  --purple: #a000ff;
+  --text-muted: #9aa;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg-dark);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 80px 20px;
+}
+
+/* HERO */
+.tools-hero {
+  text-align: center;
+  margin-bottom: 70px;
+}
+
+.tools-hero span {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid rgba(0,242,234,0.4);
+  border-radius: 20px;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  color: var(--cyan);
+}
+
+.tools-hero h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin: 16px 0;
+  background: linear-gradient(90deg, #fff, var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tools-hero p {
+  max-width: 600px;
+  margin: auto;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* GRID */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 32px;
+}
+
+/* CARD */
+.tool-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  text-decoration: none;
+  color: #fff;
+  transition: 0.35s ease;
+  position: relative;
+}
+
+.tool-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(0,242,234,0.6);
+  box-shadow: 0 20px 40px rgba(0,242,234,0.15);
+}
+
+/* IMAGE */
+.tool-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: #000;
+}
+
+.tool-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* FREE BADGE */
+.free-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  color: #000;
+  font-size: 0.65rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* TEXT */
+.tool-card h3 {
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+
+.tool-card p {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.7);
+}
+
+/* CTA */
+.tools-cta {
+  margin-top: 80px;
+  text-align: center;
+  padding: 50px 20px;
+  border: 1px dashed rgba(255,255,255,0.15);
+  border-radius: 20px;
+}
+
+.tools-cta h2 {
+  margin-bottom: 10px;
+}
+
+.tools-cta p {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.tools-cta a {
+  display: inline-block;
+  padding: 12px 30px;
+  border-radius: 30px;
+  background: linear-gradient(90deg, var(--purple), var(--cyan));
+  color: #000;
+  font-weight: 700;
+  text-decoration: none;
+}
+</style>
+<link rel="stylesheet" href="fab.css">
+<link rel="stylesheet" href="back.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<nav class="gi28-menu" id="gi28Menu">
+  <a href="about.html">About Us</a>
+  <a href="contact.html">Contact Us</a>
+  <a href="tools.html">Tools</a>
+  <a href="cookies.html">Cookies & Privacy Policy</a>
+  <a href="terms.html">Terms & Conditions</a>
+</nav>
+  <!-- HERO -->
+  <div class="tools-hero">
+    <span>GI28 FREE TOOLS</span>
+    <h1>Free Instagram Tools</h1>
+    <p>Privacy-friendly, no-login tools to boost your Instagram growth. Built with performance, security & style.</p>
+  </div>
+
+  <!-- TOOLS GRID -->
+  <div class="tools-grid">
+
+    <a href="fontchanger.html" class="tool-card">
+      <div class="tool-image">
+        <img src="https://i.ibb.co/jkrr7gnB/28-20260111-014748-0000.png" alt="">
+      </div>
+      <span class="free-badge">FREE</span>
+      <h3>Text Font Changer</h3>
+      <p>Offers a lot of usable font options with custom text.</p>
+    </a>
+
+    <a href="linkcreator.html" class="tool-card">
+      <div class="tool-image">
+        <img src="https://i.ibb.co/T3VZ71h/In-Shot-20260111-015717904.jpg" alt="">
+      </div>
+      <span class="free-badge">FREE</span>
+      <h3>Username to link</h3>
+      <p>Generates a lot of Links with different options of output.</p>
+    </a>
+
+    <a href="profilecard.html" class="tool-card">
+      <div class="tool-image">
+        <img src="/images/Pr0file Card.jpg" alt="">
+      </div>
+      <span class="free-badge">FREE</span>
+      <h3>Profile Card Generator</h3>
+      <p>Full Customisable Profile Card, With a lot of options.</p>
+    </a>
+
+    <a href="qrgenerator1.html" class="tool-card">
+      <div class="tool-image">
+        <img src="https://i.ibb.co/7NrxDKG5/In-Shot-20260111-022641344.jpg" alt="">
+      </div>
+      <span class="free-badge">FREE</span>
+      <h3>Profile QR Generator V1</h3>
+      <p>High quality instagram profile QR code (1st Version)</p>
+    </a>
+    <a href="qrgenerator2.html" class="tool-card">
+      <div class="tool-image">
+        <img src="https://i.ibb.co/zhZ0Zv16/In-Shot-20260111-022043628.jpg" alt="">
+      </div>
+      <span class="free-badge">FREE</span>
+      <h3>Profile QR Generator V2</h3>
+      <p>More Customisable, More options & More Useful output expectations! (2nd Version)</p>
+    </a>
+    
+    <!-- Not Completed -->
+    
+    <a href="ParticleEngine.html" class="tool-card">
+      <div class="tool-image">
+        <img src="https://i.ibb.co/HTm1sBdf/In-Shot-20260111-220224568.jpg" alt="Particle Engine">
+      </div>
+      <span class="free-badge">FREE</span>
+      <h3>PARTICLE ENGINE</h3>
+      <p>Original Particle Engine, Do Fun by making dot particles of own Name, Text, Iamage, etc.</p>
+    </a>
+    
+    <a href="zenitm.html" class="tool-card">
+      <div class="tool-image">
+        <img src="https://i.ibb.co/SXV6W508/In-Shot-20260111-222538453.jpg" alt="">
+      </div>
+      <span class="free-badge">FREE</span>
+      <h3>ZENITM PRO</h3>
+      <p>ZENITM PRO is the next level version of Particle Engine with some extra features. <br>
+⚠ ZENITM PRO ≠ Particle Engine <br> ZENITM PRO ≈ Particle Engine</p>
+      
+    </a>
+
+
+    <a href="aether.html" class="tool-card">
+      <div class="tool-image">
+        <img src="https://i.ibb.co/h146D5Lv/In-Shot-20260111-223640366.jpg" alt="">
+      </div>
+      <span class="free-badge">Free</span>
+      <h3>AETHER</h3>
+      <p>Max upgraded version of PARTICLE ENGINE & ZENITM. <br>• Video upload option <br>• Premium UI<br>Free For Now</p>
+    </a>
+    
+    
+    <a href="submit.html" class="tool-card">
+      <div class="tool-image">
+        <img src="https://i.ibb.co/YTThL0Xs/In-Shot-20260111-023117321.jpg" alt="">
+      </div>
+    <span class="free-badge">Public Data</span>
+<h3>Instagram Profile Preview</h3>
+
+<p>
+See a visual preview of your public Instagram profile.<br>
+No login required, Public information only.
+</p>
+    </a>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="tools-cta">
+    <h2>Want a new tool?</h2>
+    <p>Suggest features & tools you want us to build next. <br>Only Mail Us for this purpose.</p>
+    <a href="contact.html">Suggest a Tool</a>
+  </div>
+
+</div>
+<div id="gi28-fab">
+  <div class="fab-main">
+    <div class="fab-icon-container">
+      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </div>
+  </div>
+
+  <div class="fab-menu">
+    <a href="about.html" class="fab-item" title="About">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    </a>
+    <a href="contact.html" class="fab-item" title="Contact">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+    </a>
+    <a href="cookies.html" class="fab-item" title="Privacy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    </a>
+  </div>
+</div>
+<div id="gi28-back">
+  <div class="back-blob">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+  </div>
+</div>
+
+<script src="fab.js"></script>
+<script src="back.js"></script>
+
+
+<script src="header.js"></script>
+
+</body>
+</html>
