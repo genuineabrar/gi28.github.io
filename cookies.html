@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy & Cookies of GI28</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --c-cyan: #00f2ea;
+            --c-magenta: #ff0050;
+            --c-purple: #a000ff;
+            --c-dark: #050507;
+            --c-panel: rgba(10, 10, 12, 0.6);
+            --c-border: rgba(255, 255, 255, 0.08);
+            --font-main: 'Outfit', sans-serif;
+            --font-tech: 'Rajdhani', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        
+        body {
+            background-color: var(--c-dark);
+            color: white;
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            overflow-y: scroll;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--c-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--c-purple); border-radius: 3px; }
+
+        /* --- 3D Canvas --- */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        /* --- Custom Cursor --- */
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--c-cyan); }
+        .cursor-outline {
+            width: 40px; height: 40px;
+            border: 1px solid var(--c-magenta);
+            transition: width 0.2s, height 0.2s;
+        }
+
+        /* --- Layout Grid --- */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6rem;
+            min-height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- Typography Helpers --- */
+        .highlight-cyan { color: var(--c-cyan); font-weight: 700; }
+        .highlight-magenta { color: var(--c-magenta); font-weight: 700; }
+        .tech-head { font-family: var(--font-tech); text-transform: uppercase; letter-spacing: 2px; color: var(--c-purple); margin-bottom: 1rem; display: block;}
+
+        /* --- Section: Hero / About --- */
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .brand-block h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 700;
+            line-height: 1;
+            background: linear-gradient(135deg, #fff 0%, var(--c-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .tech-desc {
+            font-size: 1.1rem;
+            color: #ccc;
+            line-height: 1.6;
+            padding: 2rem;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent);
+            border-left: 3px solid var(--c-cyan);
+            border-radius: 0 12px 12px 0;
+        }
+
+        /* --- Content Cards (Glass) --- */
+        .glass-panel {
+            background: var(--c-panel);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 3rem;
+            border-radius: 24px;
+            border: 1px solid var(--c-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transition: transform 0.3s;
+        }
+        
+        .glass-panel h2 { font-family: 'Space Grotesk'; font-size: 2rem; margin-bottom: 1.5rem; color: white; }
+        .glass-panel p { color: #aaa; line-height: 1.7; margin-bottom: 1rem; }
+        .glass-panel ul { margin-left: 1rem; color: #aaa; margin-bottom: 1rem; }
+        .glass-panel li { margin-bottom: 0.5rem; }
+
+        /* --- Screws Decoration --- */
+        .screw {
+            position: absolute; width: 10px; height: 10px; border-radius: 50%;
+            background: #222; border: 1px solid #444; display: flex; align-items: center; justify-content: center;
+        }
+        .screw::after { content: '+'; font-size: 10px; color: #555; }
+        .screw.tl { top: 15px; left: 15px; }
+        .screw.tr { top: 15px; right: 15px; }
+        .screw.bl { bottom: 15px; left: 15px; }
+        .screw.br { bottom: 15px; right: 15px; }
+
+        /* --- Grid Layouts --- */
+        .split-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .list-unstyled { list-style: none; margin: 0; }
+        .list-unstyled li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ddd;
+        }
+        .list-unstyled li i { color: var(--c-cyan); }
+
+        /* --- Security Section --- */
+        .security-box {
+            border: 1px solid rgba(255, 0, 80, 0.3);
+            background: rgba(255, 0, 80, 0.05);
+        }
+        .security-box li i { color: var(--c-magenta); }
+
+        /* --- Vision --- */
+        .vision-container {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .vision-quote {
+            font-size: 2rem;
+            font-family: 'Space Grotesk';
+            line-height: 1.4;
+        }
+
+        /* --- Contact Form Styles (From your request) --- */
+        .form-title {
+            font-family: var(--font-tech); font-size: 1.5rem; text-transform: uppercase;
+            letter-spacing: 2px; color: var(--c-cyan); margin-bottom: 2rem;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .form-title i { font-size: 1rem; animation: blink 2s infinite; }
+        .input-group { position: relative; margin-bottom: 2rem; }
+        .input-field {
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--c-border);
+            padding: 15px; color: white; font-family: var(--font-main); border-radius: 8px; transition: 0.3s;
+        }
+        .input-field:focus {
+            border-color: var(--c-purple); box-shadow: 0 0 15px rgba(160, 0, 255, 0.2); background: rgba(0,0,0,0.5);
+        }
+        .input-label {
+            position: absolute; left: 15px; top: 15px; color: #666; pointer-events: none;
+            transition: 0.3s; background: transparent; padding: 0 5px;
+        }
+        .input-field:focus ~ .input-label, .input-field:not(:placeholder-shown) ~ .input-label {
+            top: -10px; left: 10px; font-size: 0.8rem; color: var(--c-cyan); background: var(--c-dark);
+        }
+        .submit-btn {
+            width: 100%; padding: 1.2rem; background: linear-gradient(90deg, var(--c-magenta), var(--c-purple));
+            border: none; color: white; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            border-radius: 8px; transition: 0.3s; cursor: none;
+        }
+        .submit-btn:hover { box-shadow: 0 0 30px rgba(255, 0, 80, 0.4); transform: scale(1.02); }
+        .submit-btn.success { background: linear-gradient(90deg, #00f260, #0575e6); pointer-events: none; }
+
+        /* Toast */
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: var(--c-dark); color: #fff;
+            text-align: center; border: 1px solid var(--c-cyan); border-radius: 8px; padding: 16px;
+            position: fixed; z-index: 1001; left: 50%; bottom: 30px; transform: translateX(-50%);
+            box-shadow: 0 0 20px rgba(0, 242, 234, 0.3); font-size: 17px; opacity: 0; transition: opacity 0.5s, bottom 0.5s;
+        }
+        #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        @media (max-width: 992px) {
+            .hero-section, .split-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .brand-block h1 { font-size: 3rem; }
+            .cursor-dot, .cursor-outline { display: none; }
+            * { cursor: auto; }
+        }
+    </style>
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="fab.css">
+<link rel="stylesheet" href="back.css">
+
+</head>
+<body>
+
+    <div id="canvas-bg"></div>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div id="toast"><i class="fa-solid fa-check-circle"></i> System Updated Successfully</div>
+
+    <div class="main-container">
+        
+        <section class="hero-section">
+            <div class="brand-block">
+                <span class="tech-head">// Legal Protocols</span>
+                <h1>Privacy Policy<br><span style="color: var(--c-magenta);">& Cookies</span></h1>
+                <p style="font-family: var(--font-tech); color: #888; letter-spacing: 1px;">
+                    LAST UPDATED: [INSERT DATE]
+                </p>
+            </div>
+            <div class="tech-desc">
+                Your privacy is extremely important to us. This Privacy Policy document outlines the types of information that are collected and recorded by this website and how we use it.<br><br>
+                <span class="highlight-cyan">By using our website, you hereby consent to our Privacy Policy and agree to its terms.</span>
+            </div>
+        </section>
+
+        <section class="split-grid">
+            
+            <div class="glass-panel" data-tilt>
+                <div class="screw tl"></div><div class="screw tr"></div>
+                <div class="screw bl"></div><div class="screw br"></div>
+                
+                <span class="tech-head">// 01.A - User Input</span>
+                <h2>Information You Provide</h2>
+                <p>When users interact with features such as:</p>
+                <ul class="list-unstyled">
+                    <li><i class="fa-solid fa-keyboard"></i> Username submission on forms</li>
+                    <li><i class="fa-solid fa-envelope"></i> Contact forms</li>
+                    <li><i class="fa-solid fa-comment-dots"></i> Feedback or inquiry forms</li>
+                </ul>
+                <p><strong>We may collect:</strong></p>
+                <ul class="list-unstyled">
+                    <li><i class="fa-solid fa-circle-check"></i> Usernames (submitted voluntarily)</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Basic form data</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Date and time of submission</li>
+                </ul>
+            </div>
+
+            <div class="glass-panel" data-tilt>
+                <div class="screw tl"></div><div class="screw tr"></div>
+                <div class="screw bl"></div><div class="screw br"></div>
+
+                <span class="tech-head">// 01.B - Telemetry</span>
+                <h2>Automated Data</h2>
+                <p>Like many websites, we collect information automatically when you visit our website to improve user experience.</p>
+                <ul class="list-unstyled">
+                    <li><i class="fa-solid fa-network-wired"></i> IP Address</li>
+                    <li><i class="fa-brands fa-chrome"></i> Browser type and version</li>
+                    <li><i class="fa-solid fa-mobile-screen"></i> Device Information</li>
+                    <li><i class="fa-solid fa-file-invoice"></i> Pages visited</li>
+                    <li><i class="fa-solid fa-clock"></i> Time spent on pages</li>
+                    <li><i class="fa-solid fa-link"></i> Referring URLs</li>
+                </ul>
+                <p style="font-size: 0.9rem; color: #888; border-top: 1px solid var(--c-border); padding-top: 15px; margin-top: 20px;">
+                    This data is used strictly for <span class="highlight-cyan">analytics and security purposes</span>.
+                </p>
+            </div>
+        </section>
+
+        <div class="glass-panel security-box" data-tilt style="text-align: center;">
+            <div class="screw tl"></div><div class="screw tr"></div>
+            <div class="screw bl"></div><div class="screw br"></div>
+
+            <span class="tech-head" style="color: var(--c-magenta);"><i class="fa-solid fa-shield-halved"></i> Negative Data Protocol</span>
+            <h2 style="margin-bottom: 1rem;">What We Do Not Ask For</h2>
+            <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                <span style="color: #ddd; font-size: 1.1rem;"><i class="fa-solid fa-ban" style="color: var(--c-magenta);"></i> Passwords</span>
+                <span style="color: #ddd; font-size: 1.1rem;"><i class="fa-solid fa-ban" style="color: var(--c-magenta);"></i> Login Credentials</span>
+                <span style="color: #ddd; font-size: 1.1rem;"><i class="fa-solid fa-ban" style="color: var(--c-magenta);"></i> Private Account Access</span>
+            </div>
+        </div>
+
+        <section class="split-grid">
+            
+            <div class="glass-panel" data-tilt>
+                <div class="screw tl"></div><div class="screw tr"></div>
+                <div class="screw bl"></div><div class="screw br"></div>
+
+                <span class="tech-head">// 02. Tracking</span>
+                <h2>Cookies & Web Beacons</h2>
+                <p>This website uses cookies to store information about visitors' preferences and to optimize the user experience by customizing content based on visitors' browser type.</p>
+                <p><strong>Cookies help us:</strong></p>
+                <ul class="list-unstyled">
+                    <li><i class="fa-solid fa-chart-pie"></i> Understand user behavior</li>
+                    <li><i class="fa-solid fa-gauge-high"></i> Improve website performance</li>
+                    <li><i class="fa-solid fa-bullhorn"></i> Serve relevant advertisements</li>
+                    <li><i class="fa-solid fa-route"></i> Analyze traffic patterns</li>
+                </ul>
+                <p style="font-size: 0.9rem; color: #888;">* You can choose to disable cookies through your individual browser options.</p>
+            </div>
+
+            <div class="glass-panel" data-tilt>
+                <div class="screw tl"></div><div class="screw tr"></div>
+                <div class="screw bl"></div><div class="screw br"></div>
+
+                <span class="tech-head">// 03. Partners</span>
+                <h2>Advertising Partners</h2>
+                <p>We use <span class="highlight-cyan">Google AdSense and Others</span> to display advertisements.</p>
+                <p>Google and its partners may use:</p>
+                <ul class="list-unstyled">
+                    <li><i class="fa-solid fa-cookie"></i> Cookies</li>
+                    <li><i class="fa-solid fa-tower-broadcast"></i> Web beacons</li>
+                    <li><i class="fa-solid fa-tag"></i> Advertising identifiers</li>
+                </ul>
+                <p style="margin-top: 20px;">
+                    This is done to display ads to users based on their visits to our site and other sites on the internet.
+                </p>
+            </div>
+        </section>
+
+        <section style="text-align: center; color: #666; font-size: 0.9rem; padding-top: 2rem; border-top: 1px solid var(--c-border);">
+      
+            <form id="contactForm" style="display:none;">
+                <input type="text" name="dummy">
+                <button id="submitBtn">Submit</button>
+                <div id="status-light"></div>
+            </form>
+        </section>
+
+    </div>
+<footer>
+        <div class="container">
+            © 2026<b> Genuine Intelligence 28</b>. All rights reserved.
+            <br>This website does not offer paid promotions, paid followers or engagement services.<br>
+          <a href="terms.html">Terms & Conditions</a> • <a href="contact.html">Contact Us</a> • <a href="cookies.html">Cookies</a> • <a href="about.html">About Us</a>
+        </div>
+    </footer>
+    <div id="gi28-fab">
+  <div class="fab-main">
+    <div class="fab-icon-container">
+      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </div>
+  </div>
+
+  <div class="fab-menu">
+    <a href="tools.html" class="fab-item" title="Tools">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+    </a>
+    <a href="about.html" class="fab-item" title="About">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    </a>
+    <a href="contact.html" class="fab-item" title="Contact">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+    </a>
+    <a href="cookies.html" class="fab-item" title="Privacy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    </a>
+  </div>
+</div>
+<div id="gi28-back">
+  <div class="back-blob">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+  </div>
+</div>
+
+    <script src="fab.js"></script>
+<script src="back.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    
+    <script>
+        /* --- FORM HANDLING SCRIPT (AJAX) --- */
+        const form = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusLight = document.getElementById('status-light');
+        const toast = document.getElementById('toast');
+
+        if(form) { // Added safety check
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 1. Loading State
+                const originalBtnText = submitBtn.innerHTML;
+                submitBtn.innerHTML = 'Transmitting Data... <i class="fa-solid fa-circle-notch fa-spin"></i>';
+                submitBtn.style.opacity = "0.8";
+                statusLight.style.color = "yellow";
+                statusLight.style.animation = "none"; // Stop blinking, go solid yellow
+
+                const formData = new FormData(form);
+                const object = Object.fromEntries(formData);
+                const json = JSON.stringify(object);
+
+                fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: json
+                })
+                .then(async (response) => {
+                    let json = await response.json();
+                    if (response.status == 200) {
+                        // 2. Success State
+                        submitBtn.innerHTML = 'Connection Established <i class="fa-solid fa-check"></i>';
+                        submitBtn.classList.add('success');
+                        statusLight.style.color = "#00f260"; // Green
+                        
+                        // Show Toast
+                        toast.className = "show";
+                        setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+                        
+                        form.reset();
+                        
+                        // Reset button after 5 seconds
+                        setTimeout(() => {
+                            submitBtn.innerHTML = originalBtnText;
+                            submitBtn.classList.remove('success');
+                            submitBtn.style.opacity = "1";
+                            statusLight.style.color = "var(--c-cyan)";
+                            statusLight.style.animation = "blink 2s infinite";
+                        }, 5000);
+                    } else {
+                        // Error State
+                        console.log(response);
+                        submitBtn.innerHTML = 'Transmission Failed';
+                        submitBtn.style.background = "red";
+                        statusLight.style.color = "red";
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    submitBtn.innerHTML = 'System Error';
+                    statusLight.style.color = "red";
+                });
+            });
+        }
+
+        /* --- VISUALS (Cursor & 3D) --- */
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+            cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 500, fill: "forwards" });
+        });
+
+        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 5, speed: 400, glare: true, "max-glare": 0.2, });
+
+        const canvas = document.querySelector('#canvas-bg');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        canvas.appendChild(renderer.domElement);
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 300;
+        const posArray = new Float32Array(particlesCount * 3);
+        for(let i = 0; i < particlesCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 15; }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const material = new THREE.PointsMaterial({ size: 0.03, color: 0x00f2ea, transparent: true, opacity: 0.8 });
+        const particlesMesh = new THREE.Points(particlesGeometry, material);
+        scene.add(particlesMesh);
+
+        const geo2 = new THREE.TorusGeometry(3, 0.02, 16, 100);
+        const mat2 = new THREE.MeshBasicMaterial({ color: 0xff0050, wireframe: true, transparent: true, opacity: 0.2 });
+        const ring = new THREE.Mesh(geo2, mat2);
+        scene.add(ring);
+
+        camera.position.z = 5;
+
+        let mouseX = 0; let mouseY = 0;
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX / window.innerWidth - 0.5;
+            mouseY = event.clientY / window.innerHeight - 0.5;
+        });
+
+        const clock = new THREE.Clock();
+        const animate = () => {
+            const elapsedTime = clock.getElapsedTime();
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = mouseY * 0.5;
+            particlesMesh.rotation.y += mouseX * 0.5;
+            ring.rotation.x = elapsedTime * 0.1;
+            ring.rotation.y = elapsedTime * 0.1;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        };
+        animate();
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
