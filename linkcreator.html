@@ -1,0 +1,512 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GI28 Link Generator</title>
+    <meta name="description" content="Professional Instagram link generator, username formatter, and bio utility tool. Create deep links, HTML codes, and stylish formats instantly.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Rajdhani:wght@500;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --c-cyan: #00f2ea;
+            --c-magenta: #ff0050;
+            --c-purple: #a000ff;
+            --c-dark: #050507;
+            --c-panel: rgba(15, 15, 20, 0.75);
+            --c-border: rgba(255, 255, 255, 0.1);
+            --c-border-hover: rgba(0, 242, 234, 0.4);
+            --font-main: 'Outfit', sans-serif;
+            --font-tech: 'Rajdhani', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+
+        /* --- Reset & Base --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--c-dark);
+            color: white;
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--c-dark); }
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(to bottom, var(--c-purple), var(--c-cyan)); 
+            border-radius: 4px; 
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; opacity: 0.3; pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- Typography --- */
+        .brand-tag {
+            font-family: var(--font-tech);
+            color: var(--c-cyan);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            border: 1px solid rgba(0, 242, 234, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            background: rgba(0, 242, 234, 0.05);
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 40%, var(--c-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle { color: #889; max-width: 500px; margin-bottom: 3rem; }
+
+        /* --- Input Section --- */
+        .input-group {
+            position: relative;
+            margin-bottom: 4rem;
+        }
+
+        .at-symbol {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--c-magenta);
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            pointer-events: none;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            background: var(--c-panel);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--c-border);
+            padding: 1.5rem 1.5rem 1.5rem 3.5rem; /* space for @ */
+            color: white;
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--c-cyan);
+            box-shadow: 0 0 25px rgba(0, 242, 234, 0.15);
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255,255,255,0.2);
+            font-family: var(--font-main);
+            font-weight: 300;
+        }
+
+        /* --- Output Sections --- */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .section-header h2 {
+            font-family: var(--font-tech);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: white;
+        }
+
+        .section-line {
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--c-border), transparent);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--c-border);
+            border-radius: 8px;
+            padding: 1.2rem;
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--c-border-hover);
+            transform: translateY(-2px);
+        }
+
+        .card-label {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-tech);
+        }
+
+        .card-value {
+            font-family: 'Courier New', monospace;
+            color: var(--c-cyan);
+            font-size: 0.95rem;
+            word-break: break-all;
+            margin-bottom: 1rem;
+            min-height: 1.5rem;
+        }
+
+        /* Style variations for different card types */
+        .card-value.bio-text { color: #ddd; font-family: var(--font-main); }
+        .card-value.brand-style { color: var(--c-magenta); font-size: 1.1rem; }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--c-border);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+            text-transform: uppercase;
+            font-family: var(--font-tech);
+            width: 100%;
+        }
+
+        .copy-btn:hover {
+            background: var(--c-cyan);
+            color: black;
+            border-color: var(--c-cyan);
+            font-weight: 700;
+        }
+
+        /* --- Toast --- */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--c-dark);
+            border: 1px solid var(--c-cyan);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-family: var(--font-tech);
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(0, 242, 234, 0.3);
+            opacity: 0;
+            transition: 0.3s ease;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* --- Footer --- */
+        footer {
+            margin-top: 5rem;
+            border-top: 1px solid var(--c-border);
+            padding-top: 2rem;
+            text-align: center;
+            color: #555;
+            font-size: 0.85rem;
+        }
+        
+        .disclaimer {
+            max-width: 600px;
+            margin: 0 auto 1rem;
+            background: rgba(255, 0, 80, 0.05);
+            border: 1px solid rgba(255, 0, 80, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            color: #aaa;
+        }
+
+        .highlight-m { color: var(--c-magenta); }
+
+    </style>
+    <link rel="stylesheet" href="footer.css">
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <header>
+            <span class="brand-tag">Genuine Intelligence 28</span>
+            <h1>Username Formatter</h1>
+            <p class="subtitle">Advanced Instagram link generation and bio-formatting utility. Secure, client-side, instant.</p>
+        </header>
+
+        <div class="input-group">
+            <span class="at-symbol">@</span>
+            <input type="text" id="usernameInput" placeholder="username" autocomplete="off" spellcheck="false">
+        </div>
+
+        <div id="results-container" style="opacity: 0.3; pointer-events: none; transition: 0.3s;">
+            
+            <div class="section-header">
+                <h2>01 // Access Links</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="grid" id="grid-access">
+                </div>
+
+            <div class="section-header">
+                <h2>02 // Deep Links & Mobile</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="grid" id="grid-deep">
+                </div>
+
+            <div class="section-header">
+                <h2>03 // Bio & Caption Text</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="grid" id="grid-bio">
+                </div>
+
+            <div class="section-header">
+                <h2>04 // Aesthetic Formats</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="grid" id="grid-brand">
+                </div>
+
+        </div>
+</div>
+            <div class="disclaimer">
+                <strong>DISCLAIMER:</strong> GI28 provides educational and utility tools only. 
+                This website is <span class="highlight-m">not affiliated with Instagram or Meta Platforms, Inc.</span> 
+                All generated links are based on standard public URL structures.
+            </div>
+<footer>
+        <div class="container">
+            © 2026<b> Genuine Intelligence 28</b>. All rights reserved.
+            <br>This website does not offer paid promotions, paid followers or engagement services.<br>
+          <a href="terms.html">Terms & Conditions</a> • <a href="contact.html">Contact Us</a> • <a href="cookies.html">Cookies</a> • <a href="about.html">About Us</a>
+        </div>
+    </footer>
+    <div id="toast">
+        <span style="color:var(--c-cyan)">✓</span> Copied to Clipboard
+    </div>
+
+    <script>
+        /**
+         * GENUINE INTELLIGENCE 28
+         * Instagram Utility Engine
+         */
+
+        const input = document.getElementById('usernameInput');
+        const container = document.getElementById('results-container');
+        const toast = document.getElementById('toast');
+
+        // Font Mapping for Aesthetic Section
+        const MAPS = {
+            monospace: "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿._",
+            bold: "𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗._",
+            italic: "𝘢𝘣𝘤𝘥𝘦𝘧𝘨𝘩𝘪𝘫𝘬𝘭𝘮𝘯𝘰𝘱𝘲𝘳𝘴𝘵𝘶𝘷𝘸𝘹𝘺𝘻0123456789._",
+            bubble: "ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ0①②③④⑤⑥⑦⑧⑨._",
+            smallCaps: "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ0123456789._"
+        };
+        const ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789._";
+
+        function transformText(text, mapString) {
+            return text.split('').map(char => {
+                const index = ALPHABET.indexOf(char.toLowerCase());
+                // Handle special logic for unicode maps that are arrays or strings
+                if (index > -1 && index < [...mapString].length) {
+                    return [...mapString][index];
+                }
+                return char;
+            }).join('');
+        }
+
+        // Card Generator
+        function createCard(label, value, type = 'standard') {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-label">${label}</div>
+                <div class="card-value ${type === 'bio' ? 'bio-text' : ''} ${type === 'brand' ? 'brand-style' : ''}">${value}</div>
+                <button class="copy-btn">Copy</button>
+            `;
+            
+            card.querySelector('button').addEventListener('click', () => {
+                navigator.clipboard.writeText(value).then(() => {
+                    showToast();
+                });
+            });
+
+            return card;
+        }
+
+        function showToast() {
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function updateGrids(rawUser) {
+            // Cleanup Input
+            let user = rawUser.trim().toLowerCase().replace(/\s+/g, '_').replace(/@/g, '');
+            
+            // Allow only valid chars for standard links
+            user = user.replace(/[^a-z0-9._]/g, '');
+
+            if(user.length === 0) {
+                container.style.opacity = "0.3";
+                container.style.pointerEvents = "none";
+                return;
+            }
+
+            container.style.opacity = "1";
+            container.style.pointerEvents = "all";
+
+            // 1. Access Links
+            const gridAccess = document.getElementById('grid-access');
+            gridAccess.innerHTML = '';
+            gridAccess.appendChild(createCard('Standard URL', `https://instagram.com/${user}`));
+            gridAccess.appendChild(createCard('Web Profile', `www.instagram.com/${user}`));
+            gridAccess.appendChild(createCard('Short Format', `instagram.com/${user}`));
+
+            // 2. Deep Links
+            const gridDeep = document.getElementById('grid-deep');
+            gridDeep.innerHTML = '';
+            gridDeep.appendChild(createCard('Mobile Protocol', `instagram://user?username=${user}`));
+            gridDeep.appendChild(createCard('Direct Message Link', `instagram://direct?username=${user}`)); // Theoretical intent
+            gridDeep.appendChild(createCard('QR Payload', `https://instagram.com/${user}?r=nametag`));
+
+            // 3. Bio Text
+            const gridBio = document.getElementById('grid-bio');
+            gridBio.innerHTML = '';
+            gridBio.appendChild(createCard('Simple Call-to-Action', `Follow me on IG: @${user}`, 'bio'));
+            gridBio.appendChild(createCard('HTML Anchor', `<a href="https://instagram.com/${user}">@${user}</a>`, 'bio'));
+            gridBio.appendChild(createCard('Markdown', `[Follow @${user}](https://instagram.com/${user})`, 'bio'));
+            gridBio.appendChild(createCard('Forum Signature', `📸 Instagram: @${user}`, 'bio'));
+
+            // 4. Aesthetic / Brand
+            const gridBrand = document.getElementById('grid-brand');
+            gridBrand.innerHTML = '';
+            gridBrand.appendChild(createCard('Monospace', transformText(user, MAPS.monospace), 'brand'));
+            gridBrand.appendChild(createCard('Bold Serum', transformText(user, MAPS.bold), 'brand'));
+            gridBrand.appendChild(createCard('Bubble Pop', transformText(user, MAPS.bubble), 'brand'));
+            gridBrand.appendChild(createCard('Small Caps', transformText(user, MAPS.smallCaps), 'brand'));
+            gridBrand.appendChild(createCard('Wide Spaced', user.split('').join(' '), 'brand'));
+        }
+
+        input.addEventListener('input', (e) => {
+            updateGrids(e.target.value);
+        });
+
+        /* --- Canvas Background (Particles) --- */
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.color = Math.random() > 0.5 ? '#00f2ea' : '#ff0050';
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if(this.x < 0) this.x = width;
+                if(this.x > width) this.x = 0;
+                if(this.y < 0) this.y = height;
+                if(this.y > height) this.y = 0;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for(let i=0; i<60; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            // Draw simplified connections
+            ctx.strokeStyle = "rgba(160, 0, 255, 0.05)";
+            ctx.lineWidth = 1;
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => { resize(); initParticles(); });
+        resize();
+        initParticles();
+        animate();
+
+    </script>
+</body>
+</html>
