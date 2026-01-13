@@ -1,0 +1,70 @@
+/* -----------------------------------------------------------
+   🔙 LEFT BACK BUTTON STYLES
+   ----------------------------------------------------------- */
+#gi28-back {
+  position: fixed;
+  bottom: 30px;
+  left: 30px; /* Left side positioning */
+  z-index: 9999;
+  user-select: none;
+}
+
+.back-blob {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  
+  /* 1. Black Glass Base (Matching the Right Button) */
+  background: rgba(10, 10, 10, 0.65);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  
+  /* 2. Glowing Cyan Border */
+  border: 1px solid rgba(0, 242, 234, 0.3);
+  
+  /* 3. The Liquid Neon Physics */
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.8),                 /* Deep Shadow */
+    inset 0px 6px 15px rgba(0, 242, 234, 0.5),      /* Cyan Top Gloss */
+    inset 0px -8px 20px rgba(127, 0, 255, 0.6),     /* Purple Bottom Depth */
+    0 0 20px rgba(0, 242, 234, 0.2);                /* Outer Haze */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, border 0.3s ease;
+}
+
+/* Hover: Lift and Glow Intensify */
+.back-blob:hover {
+  transform: translateY(-4px) scale(1.05);
+  border-color: rgba(0, 242, 234, 0.6);
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.9),
+    inset 0px 8px 20px rgba(0, 242, 234, 0.8),
+    inset 0px -8px 25px rgba(127, 0, 255, 0.8),
+    0 0 30px rgba(0, 242, 234, 0.4);
+}
+
+/* Active: Press Down */
+.back-blob:active {
+  transform: scale(0.95);
+  box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.8);
+}
+
+/* Icon Styling */
+.back-blob svg {
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 0 5px rgba(0, 242, 234, 0.8)); /* Neon Icon Glow */
+  transition: transform 0.3s ease;
+}
+
+/* Subtle arrow animation on hover */
+.back-blob:hover svg {
+  transform: translateX(-3px);
+}
