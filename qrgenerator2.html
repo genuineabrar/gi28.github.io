@@ -1,0 +1,506 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GI28 Instagram Profile QR Generator</title>
+    <meta name="description" content="Generate professional, customizable QR codes for Instagram profiles. Fully client-side, secure, and styled for the GI28 ecosystem.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Rajdhani:wght@500;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --c-cyan: #00f2ea;
+            --c-magenta: #ff0050;
+            --c-purple: #a000ff;
+            --c-dark: #050507;
+            --c-panel: rgba(15, 15, 20, 0.75);
+            --c-border: rgba(255, 255, 255, 0.1);
+            --c-border-hover: rgba(0, 242, 234, 0.4);
+            --font-main: 'Outfit', sans-serif;
+            --font-tech: 'Rajdhani', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--c-dark);
+            color: white;
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--c-dark); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, var(--c-purple), var(--c-cyan)); border-radius: 4px; }
+
+        /* Canvas BG */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; opacity: 0.25; pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Typography */
+        .brand-tag {
+            font-family: var(--font-tech);
+            color: var(--c-cyan);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            border: 1px solid rgba(0, 242, 234, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            background: rgba(0, 242, 234, 0.05);
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 40%, var(--c-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle { color: #889; max-width: 500px; margin-bottom: 3rem; }
+
+        /* Layout Grid */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .tool-grid { grid-template-columns: 1fr; }
+            .preview-col { order: -1; } /* Preview on top for mobile */
+        }
+
+        /* Controls Panel */
+        .controls-panel {
+            background: var(--c-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--c-border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .input-group { margin-bottom: 1.5rem; }
+        
+        label {
+            display: block;
+            font-family: var(--font-tech);
+            color: #aaa;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--c-border);
+            color: white;
+            padding: 1rem;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--c-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 234, 0.1);
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Custom Color Input */
+        input[type="color"] {
+            appearance: none;
+            width: 100%;
+            height: 40px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border-radius: 6px;
+            border: 1px solid var(--c-border);
+        }
+
+        /* Sliders */
+        input[type="range"] {
+            width: 100%;
+            background: transparent;
+            -webkit-appearance: none;
+            margin: 10px 0;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--c-cyan);
+            -webkit-appearance: none;
+            margin-top: -6px;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--c-cyan);
+        }
+
+        .exp-tag {
+            font-size: 0.6rem;
+            color: var(--c-magenta);
+            border: 1px solid var(--c-magenta);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        select {
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: 1px solid var(--c-border);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            outline: none;
+        }
+
+        /* Preview Area */
+        .preview-wrapper {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--c-border);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 2rem;
+            text-align: center;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            margin-bottom: 2rem;
+            background: transparent; /* Allow transparent BG */
+        }
+
+        .download-btn {
+            background: linear-gradient(90deg, var(--c-purple), var(--c-magenta));
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-family: var(--font-tech);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(160, 0, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 0, 80, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 5rem;
+            border-top: 1px solid var(--c-border);
+            padding-top: 2rem;
+            text-align: center;
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        .disclaimer {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 0, 80, 0.05);
+            border: 1px solid rgba(255, 0, 80, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            color: #aaa;
+            margin-bottom: 1rem;
+        }
+    </style>
+    <link rel="stylesheet" href="footer.css">
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <header>
+            <span class="brand-tag">Genuine Intelligence 28</span>
+            <h1>Profile QR Forge</h1>
+            <p class="subtitle">Create styled, high-resolution QR codes for Instagram profiles. Fully offline secure generation. No Watermark, 100% Free, Unlimited Usage.</p>
+        
+        </header>
+
+        <div class="tool-grid">
+            
+            <div class="controls-panel">
+                
+                <div class="input-group">
+                    <label>Instagram Username</label>
+                    <input type="text" id="usernameInput" placeholder="username" spellcheck="false">
+                </div>
+
+                <div class="control-row">
+                    <div>
+                        <label>Foreground</label>
+                        <input type="color" id="fgColor" value="#ffffff">
+                    </div>
+                    <div>
+                        <label>Background</label>
+                        <input type="color" id="bgColor" value="#050507">
+                    </div>
+                </div>
+
+                <div class="control-row">
+                    <div>
+                        <label>Size (px)</label>
+                        <input type="range" id="size" min="200" max="2000" step="100" value="1000">
+                    </div>
+                    <div>
+                        <label>Margin</label>
+                        <input type="range" id="margin" min="0" max="4" step="1" value="1">
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--c-border); margin: 2rem 0;">
+                
+                <label>Experimental Styling <span class="exp-tag">BETA</span></label>
+                
+                <div class="input-group">
+                    <label>Module Shape</label>
+                    <select id="shapeStyle">
+                        <option value="square">Standard Squares</option>
+                        <option value="rounded">Rounded Squares</option>
+                        <option value="dots">Dots / Circles</option>
+                        <option value="diamond">Diamonds</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Fill Effect</label>
+                    <select id="fillStyle">
+                        <option value="solid">Solid Color</option>
+                        <option value="gradient-cyan">Cyber Gradient (Cyan)</option>
+                        <option value="gradient-magenta">Neon Gradient (Magenta)</option>
+                        <option value="gradient-gold">Luxury Gold</option>
+                    </select>
+                </div>
+
+                <div class="control-row">
+                    <div>
+                        <label>Dot Scale</label>
+                        <input type="range" id="dotScale" min="0.5" max="1.0" step="0.05" value="1.0">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="preview-col">
+                <div class="preview-wrapper">
+                    <canvas id="qrCanvas"></canvas>
+                    <button class="download-btn" id="downloadBtn">
+                        Download PNG
+                    </button>
+                    <div style="margin-top: 1rem; font-size: 0.8rem; color: #666; font-family: var(--font-tech);">
+                        <span id="res-display">1000x1000</span> px
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+              <div class="disclaimer">
+                <strong>DISCLAIMER:</strong> Decorative styles are experimental. Always test your QR code before printing or sharing. 
+                GI28 is not affiliated with Instagram or Meta Platforms, Inc.
+            </div>
+<footer>
+        <div class="container">
+            © 2026<b> Genuine Intelligence 28</b>. All rights reserved.
+            <br>This website does not offer paid promotions, paid followers or engagement services.<br>
+          <a href="terms.html">Terms & Conditions</a> • <a href="contact.html">Contact Us</a> • <a href="cookies.html">Cookies</a> • <a href="about.html">About Us</a>
+        </div>
+    </footer>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+/* ===============================
+   REAL QR ENGINE (ISO STANDARD)
+   =============================== */
+
+const canvas = document.getElementById('qrCanvas');
+const ctx = canvas.getContext('2d');
+
+const usernameInput = document.getElementById('usernameInput');
+const fgColor = document.getElementById('fgColor');
+const bgColor = document.getElementById('bgColor');
+const sizeInput = document.getElementById('size');
+const marginInput = document.getElementById('margin');
+const shapeStyle = document.getElementById('shapeStyle');
+const fillStyle = document.getElementById('fillStyle');
+const dotScale = document.getElementById('dotScale');
+const downloadBtn = document.getElementById('downloadBtn');
+const resDisplay = document.getElementById('res-display');
+
+let qr = null;
+
+function generateQR() {
+    const username = usernameInput.value.trim() || "gi28.site";
+    const profileURL = `https://instagram.com/${username}`;
+
+    qr = qrcode(0, 'H'); // auto size, HIGH error correction
+    qr.addData(profileURL);
+    qr.make();
+
+    drawQR();
+}
+
+function drawQR() {
+    if (!qr) return;
+
+    const moduleCount = qr.getModuleCount();
+    const margin = parseInt(marginInput.value);
+    const size = parseInt(sizeInput.value);
+
+    const totalModules = moduleCount + margin * 2;
+    const cellSize = Math.floor(size / totalModules);
+    const finalSize = cellSize * totalModules;
+
+    canvas.width = finalSize;
+    canvas.height = finalSize;
+    resDisplay.textContent = `${finalSize}x${finalSize}`;
+
+    // Background
+    ctx.fillStyle = bgColor.value;
+    ctx.fillRect(0, 0, finalSize, finalSize);
+
+    // Fill style
+    let fill;
+    if (fillStyle.value === 'solid') {
+        fill = fgColor.value;
+    } else {
+        const g = ctx.createLinearGradient(0, 0, finalSize, finalSize);
+        if (fillStyle.value === 'gradient-cyan') {
+            g.addColorStop(0, '#00f2ea');
+            g.addColorStop(1, '#a000ff');
+        } else if (fillStyle.value === 'gradient-magenta') {
+            g.addColorStop(0, '#ff0050');
+            g.addColorStop(1, '#a000ff');
+        } else {
+            g.addColorStop(0, '#bf953f');
+            g.addColorStop(0.5, '#fcf6ba');
+            g.addColorStop(1, '#bf953f');
+        }
+        fill = g;
+    }
+
+    ctx.fillStyle = fill;
+    const scale = parseFloat(dotScale.value);
+
+    for (let r = 0; r < moduleCount; r++) {
+        for (let c = 0; c < moduleCount; c++) {
+            if (qr.isDark(r, c)) {
+                const x = (c + margin) * cellSize;
+                const y = (r + margin) * cellSize;
+                const sizeDraw = cellSize * scale;
+                const offset = (cellSize - sizeDraw) / 2;
+
+                ctx.beginPath();
+                if (shapeStyle.value === 'dots') {
+                    ctx.arc(x + cellSize / 2, y + cellSize / 2, sizeDraw / 2, 0, Math.PI * 2);
+                } else if (shapeStyle.value === 'rounded') {
+                    roundRect(ctx, x + offset, y + offset, sizeDraw, sizeDraw, sizeDraw * 0.3);
+                } else if (shapeStyle.value === 'diamond') {
+                    ctx.moveTo(x + cellSize / 2, y + offset);
+                    ctx.lineTo(x + cellSize - offset, y + cellSize / 2);
+                    ctx.lineTo(x + cellSize / 2, y + cellSize - offset);
+                    ctx.lineTo(x + offset, y + cellSize / 2);
+                } else {
+                    ctx.rect(x + offset, y + offset, sizeDraw, sizeDraw);
+                }
+                ctx.fill();
+            }
+        }
+    }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+}
+
+downloadBtn.addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.download = `instagram-qr-${usernameInput.value || 'gi28'}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+});
+
+[
+    usernameInput, fgColor, bgColor,
+    sizeInput, marginInput,
+    shapeStyle, fillStyle, dotScale
+].forEach(el => el.addEventListener('input', generateQR));
+
+generateQR();
+</script>
+</body>
+</html>
