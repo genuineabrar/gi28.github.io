@@ -1,0 +1,133 @@
+
+        /* =========================================
+           3. 3D CARD GRID
+           ========================================= */
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            padding: 1rem;
+            perspective: 1000px; 
+        }
+
+        /* Scene wrapper for each card */
+        .card-scene {
+            width: 100%;
+            height: 320px;
+            position: relative;
+            perspective: 1000px;
+            cursor: grab;
+            /* CRITICAL FIX: Allows vertical scrolling on mobile */
+            touch-action: pan-y; 
+        }
+        .card-scene:active { cursor: grabbing; }
+
+        /* The rotating object */
+        .card-object {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 0.1s linear; 
+            border-radius: 24px;
+        }
+
+        /* Front and Back common styles */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 24px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            backface-visibility: hidden;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        /* --- FRONT FACE --- */
+        .face-front {
+            background: rgba(20, 20, 25, 0.6);
+            backdrop-filter: blur(20px);
+            z-index: 2;
+        }
+        
+        .face-front::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(233, 46, 251, 0.4), rgba(0, 240, 255, 0.1));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        /* --- BACK FACE --- */
+        .face-back {
+            background: var(--bg-surface);
+            transform: rotateY(180deg);
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+        }
+
+        /* Typography inside cards */
+        .term-number {
+            font-size: 3rem;
+            font-weight: 900;
+            opacity: 0.1;
+            position: absolute;
+            top: 1rem; right: 1.5rem;
+            background: linear-gradient(to bottom, white, transparent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .icon-box {
+            width: 60px; height: 60px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--neon-cyan);
+        }
+
+        h3 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .drag-hint {
+            position: absolute;
+            bottom: 15px;
+            font-size: 0.7rem;
+            color: var(--neon-magenta);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* =========================================
+           4. MOBILE RESPONSIVE
+           ========================================= */
+        @media (max-width: 768px) {
+            .card-scene { height: 280px; }
+            h1 { font-size: 2rem; }
+            .terms-grid { grid-template-columns: 1fr; }
+        }
