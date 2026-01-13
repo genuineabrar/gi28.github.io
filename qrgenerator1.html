@@ -1,0 +1,1365 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GI28 Premium Instagram Creator Tool - Generate scannable, custom, high-resolution QR codes.">
+    <title>GI28 | Genuine Intelligence 28 - Creator Tool</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+
+    <style>
+      /* =========================================
+   1. CORE VARIABLES & RESET
+   ========================================= */
+:root {
+    /* Brand Colors */
+    --primary: #00ff9d;
+    --primary-glow: rgba(0, 255, 157, 0.4);
+    --secondary: #00d2ff;
+    --accent: #7000ff;
+    
+    /* UI Colors (Dark Mode Default) */
+    --bg-deep: #050505;
+    --bg-panel: rgba(20, 20, 20, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
+    
+    /* Text */
+    --text-main: #ffffff;
+    --text-muted: #888888;
+    
+    /* Spacing & Layout */
+    --app-max-width: 1400px;
+    --header-height: 70px;
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    
+    /* Animations */
+    --trans-fast: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --trans-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Light Mode Override (Toggled via JS class 'light-theme') */
+body.light-theme {
+    --bg-deep: #f0f2f5;
+    --bg-panel: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --glass-highlight: rgba(255, 255, 255, 0.4);
+    --text-main: #111111;
+    --text-muted: #666666;
+    --primary: #0055ff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+    transition: background-color 0.5s ease;
+}
+
+h1, h2, h3, .brand-mark {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.3);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* =========================================
+   2. BACKGROUND EFFECTS
+   ========================================= */
+.bg-grid {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        linear-gradient(var(--glass-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.bg-gradient-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: -2;
+    opacity: 0.4;
+    animation: floatOrb 10s infinite alternate;
+}
+
+.orb-1 {
+    width: 50vw; height: 50vw;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    top: -10%; left: -10%;
+}
+
+.orb-2 {
+    width: 40vw; height: 40vw;
+    background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
+    bottom: -10%; right: -10%;
+    animation-delay: -5s;
+}
+
+@keyframes floatOrb {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 30px); }
+}
+
+/* =========================================
+   3. LAYOUT & GLASSMORPHISM
+   ========================================= */
+.app-container {
+    max-width: var(--app-max-width);
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.glass-panel {
+    background: var(--bg-panel);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-md);
+}
+
+/* Header */
+.app-header {
+    height: var(--header-height);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-mark {
+    font-weight: 700;
+    font-size: 24px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+}
+
+.brand-text h1 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.badge {
+    font-size: 10px;
+    background: var(--glass-highlight);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color var(--trans-fast);
+}
+
+.nav-link:hover {
+    color: var(--text-main);
+}
+
+.btn-icon {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--trans-fast);
+}
+
+.btn-icon:hover {
+    background: var(--glass-highlight);
+    border-color: var(--primary);
+}
+
+/* =========================================
+   4. MAIN GRID LAYOUT
+   ========================================= */
+.tool-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 30px;
+    flex: 1;
+    overflow: hidden; /* Lock scroll to panels */
+}
+
+/* Left Panel: Controls */
+.control-panel {
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    height: calc(100vh - 120px);
+}
+
+/* Right Panel: Preview */
+.preview-panel {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+}
+
+.sticky-wrapper {
+    position: sticky;
+    top: 20px;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* =========================================
+   5. CONTROLS STYLING
+   ========================================= */
+.control-group h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 0;
+}
+
+.group-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 10px;
+}
+
+.group-header i {
+    color: var(--primary);
+}
+
+/* Inputs */
+.input-wrapper label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+}
+
+.input-icon-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon-group i {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+}
+
+.input-icon-group input[type="text"] {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    padding: 12px 12px 12px 40px;
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: all var(--trans-fast);
+}
+
+.input-icon-group input[type="text"]:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--primary-glow);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.helper-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    font-family: monospace;
+}
+
+/* Preset Grid */
+.preset-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.preset-btn {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform var(--trans-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.preset-btn:hover {
+    transform: scale(1.05);
+}
+
+.preset-btn.active {
+    border-color: var(--text-main);
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+/* Color Pickers */
+.color-pickers {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    gap: 10px;
+}
+
+.picker-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.picker-item label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+input[type="color"] {
+    -webkit-appearance: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: 2px solid var(--glass-border);
+    border-radius: 50%;
+}
+
+/* Toggles & Sliders */
+.toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin: 10px 0;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #333;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: var(--primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Range Inputs */
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+    margin: 10px 0;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    margin-top: -6px;
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: var(--glass-border);
+    border-radius: 2px;
+}
+
+/* Shape Selectors */
+.shape-selector {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.shape-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    padding: 8px;
+    cursor: pointer;
+    transition: all var(--trans-fast);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.shape-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+}
+
+.shape-btn.active {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+}
+
+/* File Upload */
+.file-upload-wrapper {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.upload-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed var(--text-muted);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all var(--trans-fast);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.upload-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #ff4444;
+    color: #ff4444;
+    padding: 0 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 12px;
+}
+.btn-secondary.hidden { display: none; }
+
+/* =========================================
+   6. PREVIEW & ANIMATIONS
+   ========================================= */
+.qr-canvas-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+}
+
+/* The actual Canvas from JS */
+#qr-canvas canvas {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+    border-radius: 8px;
+}
+
+/* Scan Line Animation */
+.scan-line {
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    box-shadow: 0 0 15px var(--primary);
+    top: 0;
+    z-index: 10;
+    animation: scan 3s ease-in-out infinite;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+@keyframes scan {
+    0% { top: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Export Controls */
+.export-controls {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.resolution-control {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+}
+
+.file-type-selector select {
+    width: 100%;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    border-radius: var(--radius-sm);
+    outline: none;
+    margin-top: 5px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border: none;
+    color: #000;
+    font-weight: 700;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: transform var(--trans-fast), box-shadow var(--trans-fast);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px var(--primary-glow);
+}
+
+.app-footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+/* =========================================
+   7. RESPONSIVENESS
+   ========================================= */
+@media (max-width: 900px) {
+    .tool-layout {
+        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column-reverse; /* Preview on top in logic, but design usually wants control below or stack order */
+    }
+    
+    .control-panel {
+        height: auto;
+        overflow-y: visible;
+    }
+
+    .tool-layout {
+        flex-direction: column; /* Preview first */
+    }
+
+    /* Reorder for Mobile: Preview First */
+    .preview-panel {
+        order: -1;
+        padding-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .preset-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .shape-selector {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .logo-area .brand-text {
+        display: none; /* Simplify header on tiny screens */
+    }
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-gradient-orb orb-1"></div>
+    <div class="bg-gradient-orb orb-2"></div>
+    <div class="bg-grid"></div>
+
+    <div class="app-container">
+        
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="brand-mark">GI28</div>
+                <div class="brand-text">
+                    <h1>GENUINE INTELLIGENCE</h1>
+                    <span class="badge">PRO</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="#" class="nav-link">Documentation</a>
+                <button class="btn-icon" aria-label="Toggle Theme">
+                    <i class="ri-moon-clear-line"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="tool-layout">
+            
+            <aside class="control-panel glass-panel custom-scrollbar">
+                
+                <div class="control-group">
+                    <div class="group-header">
+                        <i class="ri-link"></i>
+                        <h3>Destination</h3>
+                    </div>
+                    <div class="input-wrapper">
+                        <label for="usernameInput">Instagram Username</label>
+                        <div class="input-icon-group">
+                            <i class="ri-instagram-line"></i>
+                            <input type="text" id="usernameInput" placeholder="username" value="gi28.site" autocomplete="off">
+                        </div>
+                        <p class="helper-text">Generates: https://instagram.com/gi28.site</p>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="group-header">
+                        <i class="ri-magic-line"></i>
+                        <h3>Premium Presets</h3>
+                    </div>
+                    <div class="preset-grid" id="presetContainer">
+                        </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="group-header">
+                        <i class="ri-palette-line"></i>
+                        <h3>Color & Gradient</h3>
+                    </div>
+                    
+                    <div class="toggle-row">
+                        <span>Gradient Mode</span>
+                        <label class="switch">
+                            <input type="checkbox" id="gradientToggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="color-pickers" id="colorControls">
+                        <div class="picker-item">
+                            <label>Primary</label>
+                            <input type="color" id="color1" value="#00ffff">
+                        </div>
+                        <div class="picker-item">
+                            <label>Secondary</label>
+                            <input type="color" id="color2" value="#ff00ff">
+                        </div>
+                        <div class="picker-item">
+                            <label>Background</label>
+                            <input type="color" id="bgColor" value="#ffffff">
+                        </div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <span>Transparent Background</span>
+                        <label class="switch">
+                            <input type="checkbox" id="transparentToggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="group-header">
+                        <i class="ri-shapes-line"></i>
+                        <h3>Design Architecture</h3>
+                    </div>
+                    
+                    <label>Data Pattern</label>
+                    <div class="shape-selector" id="dotsShapeSelector">
+                        <button class="shape-btn active" data-shape="dots" aria-label="Dots"><i class="ri-checkbox-blank-circle-line"></i></button>
+                        <button class="shape-btn" data-shape="rounded" aria-label="Rounded"><i class="ri-checkbox-blank-line" style="border-radius: 4px;"></i></button>
+                        <button class="shape-btn" data-shape="square" aria-label="Square"><i class="ri-checkbox-blank-line"></i></button>
+                        <button class="shape-btn" data-shape="classy" aria-label="Classy"><i class="ri-apps-2-line"></i></button>
+                        <button class="shape-btn" data-shape="classy-rounded" aria-label="Classy Rounded"><i class="ri-apps-line"></i></button>
+                        <button class="shape-btn" data-shape="extra-rounded" aria-label="Extra Rounded"><i class="ri-circle-line"></i></button>
+                    </div>
+
+                    <label class="mt-2">Marker Borders (Eyes)</label>
+                    <div class="shape-selector" id="cornersShapeSelector">
+                        <button class="shape-btn" data-shape="square" aria-label="Square"><i class="ri-stop-line"></i></button>
+                        <button class="shape-btn active" data-shape="dot" aria-label="Dot"><i class="ri-checkbox-blank-circle-line"></i></button>
+                        <button class="shape-btn" data-shape="extra-rounded" aria-label="Rounded"><i class="ri-checkbox-blank-line" style="border-radius: 6px;"></i></button>
+                    </div>
+
+                     <label class="mt-2">Marker Centers</label>
+                    <div class="shape-selector" id="cornersDotShapeSelector">
+                        <button class="shape-btn" data-shape="square" aria-label="Square"><i class="ri-stop-fill"></i></button>
+                        <button class="shape-btn active" data-shape="dot" aria-label="Dot"><i class="ri-checkbox-blank-circle-fill"></i></button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="group-header">
+                        <i class="ri-image-add-line"></i>
+                        <h3>Branding</h3>
+                    </div>
+                    
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="logoInput" accept="image/*" hidden>
+                        <label for="logoInput" class="upload-btn">
+                            <i class="ri-upload-cloud-2-line"></i>
+                            <span>Upload Logo</span>
+                        </label>
+                        <button id="removeLogoBtn" class="btn-secondary hidden">Remove</button>
+                    </div>
+
+                    <div class="slider-group">
+                        <label>Logo Size</label>
+                        <input type="range" id="logoSize" min="0.1" max="0.5" step="0.05" value="0.35">
+                    </div>
+                    <div class="slider-group">
+                        <label>Logo Margin</label>
+                        <input type="range" id="logoMargin" min="0" max="20" step="1" value="5">
+                    </div>
+                </div>
+
+            </aside>
+
+            <section class="preview-panel">
+                <div class="sticky-wrapper">
+                    
+                    <div class="qr-canvas-wrapper glass-panel">
+                        <div class="scan-line"></div>
+                        <div id="qr-canvas"></div>
+                        <div class="loading-overlay" id="loadingOverlay">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+
+                    <div class="export-controls glass-panel">
+                        <div class="resolution-control">
+                            <label>Resolution: <span id="resValue">2000px</span></label>
+                            <input type="range" id="resolutionSlider" min="500" max="4000" step="100" value="2000">
+                        </div>
+
+                        <div class="file-type-selector">
+                            <label>File Extension</label>
+                            <select id="fileExt">
+                                <option value="png">PNG (Raster)</option>
+                                <option value="svg">SVG (Vector)</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="webp">WEBP</option>
+                            </select>
+                        </div>
+
+                        <button id="downloadBtn" class="btn-primary">
+                            <i class="ri-download-line"></i>
+                            <span>Download Asset</span>
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+        
+        <footer class="app-footer">
+            <p>&copy; 2026 Genuine Intelligence 28. All systems operational.</p>
+        </footer>
+    </div>
+
+    <script>
+      /**
+ * GI28 GENUINE INTELLIGENCE - PREMIUM QR ENGINE
+ * Version: 2.0.0
+ * Architecture: Modular ES6+
+ * * Core responsibilities:
+ * 1. State Management
+ * 2. QR Rendering (using qr-code-styling)
+ * 3. Event Handling (Debounced)
+ * 4. File I/O (Logo processing, Exports)
+ */
+
+// =========================================
+// 1. CONFIGURATION & STATE
+// =========================================
+
+const CONFIG = {
+    baseUrl: "https://instagram.com/",
+    defaultUser: "gi28.site",
+    debounceTime: 300,
+    maxRes: 4000,
+    minRes: 500
+};
+
+// Application State
+let appState = {
+    content: CONFIG.baseUrl + CONFIG.defaultUser,
+    width: 1000,
+    height: 1000,
+    type: "svg",
+    margin: 0,
+    qrOptions: {
+        dotsOptions: {
+            color: "#00ffff",
+            type: "dots",
+            gradient: {
+                type: "linear",
+                rotation: 45,
+                colorStops: [
+                    { offset: 0, color: "#00ffff" },
+                    { offset: 1, color: "#ff00ff" }
+                ]
+            }
+        },
+        backgroundOptions: {
+            color: "transparent",
+        },
+        imageOptions: {
+            crossOrigin: "anonymous",
+            margin: 5,
+            imageSize: 0.35,
+            hideBackgroundDots: true
+        },
+        cornersSquareOptions: {
+            type: "extra-rounded",
+            color: "#00ffff" // Will sync with primary
+        },
+        cornersDotOptions: {
+            type: "dot",
+            color: "#00ffff" // Will sync with primary
+        }
+    },
+    ui: {
+        isGradient: true,
+        isTransparent: true,
+        primaryColor: "#00ffff",
+        secondaryColor: "#ff00ff",
+        bgColor: "#ffffff",
+        logoUrl: ""
+    }
+};
+
+// =========================================
+// 2. DOM ELEMENTS
+// =========================================
+
+const DOM = {
+    inputs: {
+        username: document.getElementById('usernameInput'),
+        color1: document.getElementById('color1'),
+        color2: document.getElementById('color2'),
+        bgColor: document.getElementById('bgColor'),
+        logoSize: document.getElementById('logoSize'),
+        logoMargin: document.getElementById('logoMargin'),
+        resolution: document.getElementById('resolutionSlider'),
+        fileExt: document.getElementById('fileExt'),
+        logoFile: document.getElementById('logoInput')
+    },
+    toggles: {
+        gradient: document.getElementById('gradientToggle'),
+        transparent: document.getElementById('transparentToggle')
+    },
+    containers: {
+        presets: document.getElementById('presetContainer'),
+        canvas: document.getElementById('qr-canvas'),
+        dotsShapes: document.getElementById('dotsShapeSelector'),
+        cornerShapes: document.getElementById('cornersShapeSelector'),
+        cornerDotShapes: document.getElementById('cornersDotShapeSelector')
+    },
+    buttons: {
+        download: document.getElementById('downloadBtn'),
+        removeLogo: document.getElementById('removeLogoBtn'),
+        theme: document.querySelector('.btn-icon[aria-label="Toggle Theme"]')
+    },
+    feedback: {
+        resValue: document.getElementById('resValue'),
+        loader: document.getElementById('loadingOverlay')
+    }
+};
+
+// =========================================
+// 3. PRESET DATA LIBRARY
+// =========================================
+
+const PRESETS = [
+    { name: "Neon Cyber", c1: "#00ff9d", c2: "#00d2ff", bg: "transparent", shape: "dots", eye: "extra-rounded" },
+    { name: "Sunset", c1: "#ff4e50", c2: "#f9d423", bg: "transparent", shape: "rounded", eye: "square" },
+    { name: "Midnight", c1: "#2b5876", c2: "#4e4376", bg: "transparent", shape: "classy", eye: "dot" },
+    { name: "Berry", c1: "#cc2b5e", c2: "#753a88", bg: "transparent", shape: "classy-rounded", eye: "extra-rounded" },
+    { name: "Forest", c1: "#134e5e", c2: "#71b280", bg: "transparent", shape: "square", eye: "square" },
+    { name: "Gold Luxury", c1: "#bf953f", c2: "#fcf6ba", bg: "#000000", shape: "classy", eye: "dot", solidBg: true },
+    { name: "Instagram", c1: "#833ab4", c2: "#fd1d1d", bg: "transparent", shape: "extra-rounded", eye: "extra-rounded" },
+    { name: "Oceanic", c1: "#2193b0", c2: "#6dd5ed", bg: "transparent", shape: "dots", eye: "dot" },
+    { name: "Monochrome", c1: "#000000", c2: "#333333", bg: "#ffffff", shape: "square", eye: "square", solidBg: true },
+    { name: "Plasma", c1: "#ef32d9", c2: "#89fffd", bg: "transparent", shape: "extra-rounded", eye: "dot" },
+    { name: "Mint", c1: "#00b09b", c2: "#96c93d", bg: "transparent", shape: "rounded", eye: "rounded" },
+    { name: "Fire", c1: "#f12711", c2: "#f5af19", bg: "transparent", shape: "dots", eye: "square" }
+];
+
+// =========================================
+// 4. CORE ENGINE INITIALIZATION
+// =========================================
+
+let qrCode;
+let debounceTimer;
+
+function initEngine() {
+    // Initialize Library
+    qrCode = new QRCodeStyling({
+        width: 1000,
+        height: 1000,
+        type: "svg",
+        data: appState.content,
+        image: "",
+        dotsOptions: appState.qrOptions.dotsOptions,
+        cornersSquareOptions: appState.qrOptions.cornersSquareOptions,
+        cornersDotOptions: appState.qrOptions.cornersDotOptions,
+        backgroundOptions: appState.qrOptions.backgroundOptions,
+        imageOptions: appState.qrOptions.imageOptions
+    });
+
+    // Mount to DOM
+    DOM.containers.canvas.innerHTML = '';
+    qrCode.append(DOM.containers.canvas);
+
+    // Initial render
+    generatePresets();
+    updateQRCode();
+}
+
+// =========================================
+// 5. RENDER LOGIC
+// =========================================
+
+function updateQRCode() {
+    showLoader(true);
+
+    // 1. Construct Options based on UI State
+    const currentOptions = {
+        data: appState.content,
+        dotsOptions: {
+            type: appState.qrOptions.dotsOptions.type,
+            gradient: appState.ui.isGradient ? {
+                type: "linear",
+                rotation: 45,
+                colorStops: [
+                    { offset: 0, color: appState.ui.primaryColor },
+                    { offset: 1, color: appState.ui.secondaryColor }
+                ]
+            } : undefined,
+            color: appState.ui.isGradient ? undefined : appState.ui.primaryColor
+        },
+        cornersSquareOptions: {
+            type: appState.qrOptions.cornersSquareOptions.type,
+            color: appState.ui.primaryColor // Keep eyes synced with primary color for consistency
+        },
+        cornersDotOptions: {
+            type: appState.qrOptions.cornersDotOptions.type,
+            color: appState.ui.secondaryColor
+        },
+        backgroundOptions: {
+            color: appState.ui.isTransparent ? "transparent" : appState.ui.bgColor
+        },
+        image: appState.ui.logoUrl,
+        imageOptions: {
+            imageSize: parseFloat(DOM.inputs.logoSize.value),
+            margin: parseFloat(DOM.inputs.logoMargin.value),
+            hideBackgroundDots: true
+        }
+    };
+
+    // 2. Update Library
+    qrCode.update(currentOptions);
+
+    // 3. Cleanup
+    setTimeout(() => showLoader(false), 300); // Fake delay for smooth feel
+}
+
+// Debounce wrapper for performance
+function debouncedUpdate() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(updateQRCode, CONFIG.debounceTime);
+}
+
+// =========================================
+// 6. EVENT HANDLERS
+// =========================================
+
+function setupEventListeners() {
+    
+    // -- Text Input --
+    DOM.inputs.username.addEventListener('input', (e) => {
+        const val = e.target.value.trim() || CONFIG.defaultUser;
+        appState.content = CONFIG.baseUrl + val;
+        // Update helper text if exists
+        const helper = e.target.parentElement.nextElementSibling;
+        if(helper) helper.innerText = `Generates: ${appState.content}`;
+        debouncedUpdate();
+    });
+
+    // -- Colors --
+    [DOM.inputs.color1, DOM.inputs.color2].forEach(input => {
+        input.addEventListener('input', () => {
+            appState.ui.primaryColor = DOM.inputs.color1.value;
+            appState.ui.secondaryColor = DOM.inputs.color2.value;
+            debouncedUpdate();
+        });
+    });
+
+    DOM.inputs.bgColor.addEventListener('input', (e) => {
+        appState.ui.bgColor = e.target.value;
+        // Auto-disable transparency if user picks a color
+        if(appState.ui.isTransparent) {
+            DOM.toggles.transparent.checked = false;
+            appState.ui.isTransparent = false;
+        }
+        debouncedUpdate();
+    });
+
+    // -- Toggles --
+    DOM.toggles.gradient.addEventListener('change', (e) => {
+        appState.ui.isGradient = e.target.checked;
+        debouncedUpdate();
+    });
+
+    DOM.toggles.transparent.addEventListener('change', (e) => {
+        appState.ui.isTransparent = e.target.checked;
+        debouncedUpdate();
+    });
+
+    // -- Shape Selectors (Delegation) --
+    DOM.containers.dotsShapes.addEventListener('click', (e) => handleShapeClick(e, 'dotsOptions', DOM.containers.dotsShapes));
+    DOM.containers.cornerShapes.addEventListener('click', (e) => handleShapeClick(e, 'cornersSquareOptions', DOM.containers.cornerShapes));
+    DOM.containers.cornerDotShapes.addEventListener('click', (e) => handleShapeClick(e, 'cornersDotOptions', DOM.containers.cornerDotShapes));
+
+    // -- Logo Handling --
+    DOM.inputs.logoFile.addEventListener('change', handleLogoUpload);
+    DOM.inputs.logoSize.addEventListener('input', debouncedUpdate);
+    DOM.inputs.logoMargin.addEventListener('input', debouncedUpdate);
+    DOM.buttons.removeLogo.addEventListener('click', () => {
+        appState.ui.logoUrl = "";
+        DOM.inputs.logoFile.value = "";
+        DOM.buttons.removeLogo.classList.add('hidden');
+        updateQRCode();
+    });
+
+    // -- Export --
+    DOM.inputs.resolution.addEventListener('input', (e) => {
+        DOM.feedback.resValue.innerText = `${e.target.value}px`;
+    });
+    
+    DOM.buttons.download.addEventListener('click', handleDownload);
+
+    // -- Theme --
+    DOM.buttons.theme.addEventListener('click', toggleTheme);
+}
+
+// Helper for Shape Buttons
+function handleShapeClick(e, configKey, container) {
+    const btn = e.target.closest('.shape-btn');
+    if(!btn) return;
+
+    // UI Update
+    container.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // State Update
+    const shape = btn.dataset.shape;
+    appState.qrOptions[configKey].type = shape;
+    
+    updateQRCode();
+}
+
+// Logo Upload Logic
+function handleLogoUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        appState.ui.logoUrl = reader.result;
+        DOM.buttons.removeLogo.classList.remove('hidden');
+        updateQRCode();
+    }
+    reader.readAsDataURL(file);
+}
+
+// =========================================
+// 7. PRESET GENERATOR
+// =========================================
+
+function generatePresets() {
+    DOM.containers.presets.innerHTML = '';
+
+    PRESETS.forEach(preset => {
+        const btn = document.createElement('div');
+        btn.className = 'preset-btn';
+        btn.title = preset.name;
+        
+        // CSS Preview of the preset
+        btn.style.background = `linear-gradient(135deg, ${preset.c1}, ${preset.c2})`;
+        if(preset.bg !== "transparent" && preset.solidBg) {
+            btn.style.border = `2px solid ${preset.c1}`;
+            btn.style.background = preset.bg;
+            // Add a small dot to show gradient colors
+            const dot = document.createElement('div');
+            dot.style.cssText = `width: 10px; height: 10px; background: linear-gradient(135deg, ${preset.c1}, ${preset.c2}); border-radius: 50%; position: absolute; bottom: 5px; right: 5px;`;
+            btn.appendChild(dot);
+        }
+
+        btn.addEventListener('click', () => applyPreset(preset));
+        DOM.containers.presets.appendChild(btn);
+    });
+}
+
+function applyPreset(p) {
+    // 1. Update State
+    appState.ui.primaryColor = p.c1;
+    appState.ui.secondaryColor = p.c2;
+    appState.ui.bgColor = p.bg;
+    appState.ui.isTransparent = (p.bg === "transparent");
+    appState.ui.isGradient = true;
+    
+    appState.qrOptions.dotsOptions.type = p.shape;
+    appState.qrOptions.cornersSquareOptions.type = p.eye;
+
+    // 2. Update Inputs DOM to match state
+    DOM.inputs.color1.value = p.c1;
+    DOM.inputs.color2.value = p.c2;
+    if(!appState.ui.isTransparent) DOM.inputs.bgColor.value = p.bg;
+    
+    DOM.toggles.gradient.checked = true;
+    DOM.toggles.transparent.checked = appState.ui.isTransparent;
+
+    // 3. Update Shape UI Active States
+    updateShapeUI('dotsOptions', p.shape, DOM.containers.dotsShapes);
+    updateShapeUI('cornersSquareOptions', p.eye, DOM.containers.cornerShapes);
+
+    updateQRCode();
+}
+
+function updateShapeUI(key, value, container) {
+    container.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+    const target = container.querySelector(`[data-shape="${value}"]`);
+    if(target) target.classList.add('active');
+}
+
+// =========================================
+// 8. UTILITIES & EXPORT
+// =========================================
+
+function showLoader(show) {
+    if(show) DOM.feedback.loader.classList.add('active');
+    else DOM.feedback.loader.classList.remove('active');
+}
+
+async function handleDownload() {
+    const ext = DOM.inputs.fileExt.value;
+    const resolution = parseInt(DOM.inputs.resolution.value);
+    
+    // Update resolution in state temporarily for download
+    const prevWidth = qrCode._options.width;
+    const prevHeight = qrCode._options.height;
+    
+    // We update the internal library options directly for high-res export
+    qrCode.update({ width: resolution, height: resolution });
+
+    const username = DOM.inputs.username.value || "gi28";
+    const filename = `GI28-${username}-qr`;
+
+    try {
+        await qrCode.download({ name: filename, extension: ext });
+    } catch (err) {
+        console.error("Export failed", err);
+        alert("Export failed. Please try a different browser or image.");
+    } finally {
+        // Revert resolution for screen rendering
+        qrCode.update({ width: 1000, height: 1000 });
+    }
+}
+
+function toggleTheme() {
+    document.body.classList.toggle('light-theme');
+    const icon = DOM.buttons.theme.querySelector('i');
+    if(document.body.classList.contains('light-theme')) {
+        icon.className = 'ri-sun-line';
+    } else {
+        icon.className = 'ri-moon-clear-line';
+    }
+}
+
+// =========================================
+// 9. BOOTSTRAP
+// =========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
+    initEngine();
+    console.log("GI28 System Online");
+});
+
+    </script>
+</body>
+</html>
