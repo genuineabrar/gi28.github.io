@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GI28 Usename Share</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="submit.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+
+    <div id="canvas-bg"></div>
+
+    <div id="toast"><i class="fa-solid fa-circle-check" style="color: var(--c-cyan);"></i> Username Saved</div>
+
+    <div class="insta-card" data-tilt>
+        <div class="scan-line"></div>
+        
+        <i class="fa-brands fa-instagram ig-icon-glow"></i>
+        <h1>Share Username</h1>
+        <p>Enter your Instagram username.</p>
+
+        <form id="instaForm">
+
+  <div class="input-wrapper">
+    <input 
+      type="text"
+      name="Instagram_Username"
+      class="input-field"
+      placeholder="username"
+      required
+      autocomplete="off"
+    >
+    <span class="at-symbol">@</span>
+  </div>
+<input type="checkbox" required>
+I confirm this is my public Instagram username and I allow analysis.
+  <button type="submit" class="submit-btn" id="submitBtn">
+    Submit ID
+  </button>
+
+</form>
+<div id="toast">
+  <i class="fa-solid fa-circle-check"></i> Username Saved
+</div>
+        <a href="contact.html" class="back-link">
+          Contact Us
+        </a>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCqrYBCTG1Z5pp1_Datg2VWe1wJxWtP9us",
+  authDomain: "gi28-admin-panel.firebaseapp.com",
+  projectId: "gi28-admin-panel"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const form = document.getElementById("instaForm");
+const submitBtn = document.getElementById("submitBtn");
+const toast = document.getElementById("toast");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const input = form.querySelector(".input-field");
+  const username = input.value.trim();
+
+  if (!username) {
+    alert("Username empty");
+    return;
+  }
+
+  const originalText = submitBtn.innerHTML;
+  submitBtn.innerHTML = 'Saving... <i class="fa-solid fa-spinner fa-spin"></i>';
+  submitBtn.style.opacity = "0.7";
+
+  try {
+    await addDoc(collection(db, "usernames"), {
+      username: username,
+      source: "website",
+      createdAt: Date.now()
+    });
+
+    // SUCCESS UI
+    submitBtn.innerHTML = 'Saved <i class="fa-solid fa-check"></i>';
+    submitBtn.style.background = "#00f260";
+
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3000);
+
+    form.reset();
+
+    setTimeout(() => {
+      submitBtn.innerHTML = originalText;
+      submitBtn.style.background = "";
+      submitBtn.style.opacity = "1";
+    }, 2500);
+
+  } catch (err) {
+    console.error("Firestore error:", err);
+    alert("SAVE ERROR: " + err.message);
+
+    submitBtn.innerHTML = originalText;
+    submitBtn.style.opacity = "1";
+  }
+});
+</script>
+</body>
+</html>
