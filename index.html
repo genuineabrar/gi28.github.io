@@ -1,7 +1,3 @@
-<!-- I am Abrar and I want to grow people's Instagram Account -->
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -479,33 +475,42 @@ The tool works fully in the browser and lets you download QR codes in high resol
                         </div>
                     </div>
                 </div>
+<div class="contact-form-wrapper glass-card">
+    <form id="contactForm" method="POST">
 
-                <div class="contact-form-wrapper glass-card">
-                    <form id="contactForm">
-                        <div class="form-group">
-                            <label for="name">Full Name</label>
-                            <input type="text" id="name" placeholder="Ex. Abrar Khan" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" placeholder="abrarkhan@proton.me" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="subject">Subject</label>
-                            <select id="subject">
-                                <option value="support">Tool Support</option>
-                                <option value="business">Business Inquiry</option>
-                                <option value="feedback">Feedback</option>
-                                  <option value="business">Hire Abrar</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" rows="5" placeholder="How can I help you?" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-full">Send Request</button>
-                    </form>
-                </div>
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" placeholder="Ex. Abrar Khan" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="abrarkhan@proton.me" required>
+        </div>
+
+        <div class="form-group">
+            <label for="subject">Subject</label>
+            <select id="subject" name="subject" required>
+                <option value="support">Tool Support</option>
+                <option value="business">Business Inquiry</option>
+                <option value="feedback">Feedback</option>
+                <option value="hire">Hire Abrar</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="How can I help you?" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-full">
+            Send Request
+        </button>
+
+    </form>
+</div>
+
+
             </div>
         </section>
 
