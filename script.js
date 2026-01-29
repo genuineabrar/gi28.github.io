@@ -462,3 +462,32 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('GI28: Initialization Warning', error);
     }
 });
+
+
+
+/* ==========================================================================
+   9. FORM HANDLING (WEB3FORMS - REAL SUBMISSION)
+   ========================================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault(); // Prevent default submission
+
+        const btn = form.querySelector('button');
+        const originalText = btn.innerText;
+        btn.innerText = 'Redirecting...';
+        btn.style.opacity = '0.7';
+        btn.disabled = true;
+
+        // Redirect to /Contact/ page
+        setTimeout(() => {
+            window.location.href = '/Contact/';
+        }, 500); // Small delay for UX
+    });
+});
+
+
+
+ 
