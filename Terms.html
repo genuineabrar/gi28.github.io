@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="GI28: Advanced social profile analysis and organic networking utility. Optimize your digital footprint securely.">
+    <title>GI28 | Digital Identity Optimization</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Rajdhani:wght@500;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --c-cyan: #00f2ea;
+            --c-magenta: #ff0050;
+            --c-purple: #a000ff;
+            --c-dark: #050507;
+            --c-panel: rgba(255, 255, 255, 0.03);
+            --c-border: rgba(255, 255, 255, 0.1);
+            --font-main: 'Outfit', sans-serif;
+            --font-tech: 'Rajdhani', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            --nav-height: 80px;
+        }
+
+        /* --- Reset & Base --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--c-dark);
+            color: white;
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* --- Backgrounds --- */
+        #canvas-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; opacity: 0.4; pointer-events: none;
+        }
+
+        /* --- Typography Utilities --- */
+        .text-cyan { color: var(--c-cyan); }
+        .text-magenta { color: var(--c-magenta); }
+        
+        .tech-label {
+            font-family: var(--font-tech);
+            color: var(--c-purple);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        h1, h2, h3 { font-family: var(--font-display); line-height: 1.1; }
+
+        /* --- Navigation --- */
+        .glass-nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%; z-index: 1000;
+            background: rgba(5, 5, 7, 0.6);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--c-border);
+        }
+
+        .nav-logo { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; }
+        
+        .nav-links-desktop { display: flex; gap: 30px; }
+        .nav-links-desktop a { font-size: 0.9rem; font-weight: 500; opacity: 0.7; }
+        .nav-links-desktop a:hover { opacity: 1; color: var(--c-cyan); }
+
+        /* --- Layout Containers --- */
+        .container {
+            max-width: 1200px; margin: 0 auto; padding: 0 20px;
+        }
+
+        .section-spacer { padding: 80px 0; }
+
+        /* --- Ad Slots (Responsive) --- */
+        .ad-container {
+            width: 100%;
+            display: flex; justify-content: center; align-items: center;
+            margin: 40px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px dashed var(--c-border);
+            border-radius: 10px;
+            min-height: 100px;
+        }
+        .ad-placeholder { color: #555; font-size: 0.8rem; font-family: var(--font-tech); }
+
+        /* --- Hero Section --- */
+        .hero-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+            align-items: center; min-height: 100vh;
+            padding-top: var(--nav-height);
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem; margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .hero-text p { color: #aaa; font-size: 1.1rem; margin-bottom: 2rem; max-width: 90%; }
+
+        /* --- Glass Card (The Form) --- */
+        .glass-card {
+            background: var(--c-panel);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--c-border);
+            border-radius: 24px; padding: 2.5rem;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        /* Decorative Screws */
+        .screw {
+            position: absolute; width: 8px; height: 8px; border-radius: 50%;
+            background: #333; border: 1px solid #555;
+        }
+        .tl { top: 15px; left: 15px; } .tr { top: 15px; right: 15px; }
+        .bl { bottom: 15px; left: 15px; } .br { bottom: 15px; right: 15px; }
+
+        /* Avatar */
+        .avatar-frame {
+            width: 90px; height: 90px; margin: 0 auto 20px;
+            border-radius: 50%; padding: 3px; background: #fff;
+            position: relative; z-index: 2;
+        }
+        .avatar-frame img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+        /* Form Elements */
+        .input-wrapper { position: relative; margin-bottom: 1.5rem; }
+        
+        .cyber-input {
+            width: 100%; padding: 16px;
+            background: rgba(0,0,0,0.4); border: 1px solid var(--c-border);
+            border-radius: 12px; color: white; font-family: var(--font-main);
+            font-size: 1.1rem; text-align: center; outline: none; transition: 0.3s;
+        }
+        .cyber-input:focus { border-color: var(--c-cyan); box-shadow: 0 0 15px rgba(0, 242, 234, 0.2); }
+        .cyber-input::placeholder { color: #666; }
+
+        .btn-submit {
+            width: 100%; padding: 16px;
+            background: linear-gradient(90deg, var(--c-magenta), var(--c-purple));
+            border: none; border-radius: 12px;
+            color: white; font-weight: 700; font-size: 1rem;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(160, 0, 255, 0.3); }
+
+        .legal-check {
+            display: flex; align-items: flex-start; gap: 10px; margin-top: 20px;
+            font-size: 0.8rem; color: #888; text-align: left; justify-content: center;
+        }
+
+        /* --- Content Sections (AdSense Safe Content) --- */
+        .grid-3 {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-box {
+            background: rgba(255,255,255,0.02); border: 1px solid var(--c-border);
+            padding: 2rem; border-radius: 16px; transition: 0.3s;
+        }
+        .feature-box:hover { background: rgba(255,255,255,0.04); border-color: var(--c-cyan); }
+        .feature-icon { font-size: 2rem; margin-bottom: 1rem; color: var(--c-cyan); }
+
+        /* --- Footer --- */
+        footer {
+            border-top: 1px solid var(--c-border); background: #020203;
+            padding: 3rem 0; text-align: center; color: #666; font-size: 0.9rem;
+        }
+        .footer-links { margin-top: 1rem; }
+        .footer-links a { margin: 0 10px; }
+
+        /* --- Toast Notification --- */
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: var(--c-dark);
+            color: #fff; text-align: center; border: 1px solid var(--c-cyan);
+            border-radius: 50px; padding: 16px; position: fixed; z-index: 1001;
+            bottom: 30px; left: 50%; transform: translateX(-50%);
+            box-shadow: 0 0 20px rgba(0, 242, 234, 0.3); opacity: 0; transition: 0.5s;
+        }
+        #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+
+        /* --- RESPONSIVE MEDIA QUERIES --- */
+        @media (max-width: 1024px) {
+            .hero-text h1 { font-size: 2.5rem; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links-desktop { display: none; } /* Use mobile menu if needed */
+            
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 3rem;
+                padding-top: 100px;
+            }
+
+            .hero-text p { margin: 0 auto 2rem auto; }
+            
+            .grid-3 { grid-template-columns: 1fr; }
+            
+            .glass-card { padding: 2rem 1.5rem; }
+            
+            /* Cursor hidden on mobile for performance */
+            .cursor-dot, .cursor-outline { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-bg"></div>
+
+    <nav class="glass-nav">
+        <a href="#" class="nav-logo">GI<span class="text-cyan">28</span></a>
+        <div class="nav-links-desktop">
+            <a href="#how-it-works">How It Works</a>
+            <a href="#features">Features</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 100px;">
+        <div class="ad-container">
+            <span class="ad-placeholder">ADVERTISEMENT SLOT (728x90 Desktop / 300x100 Mobile)</span>
+            </div>
+    </div>
+
+    <div class="container">
+        <section class="hero-grid">
+            <div class="hero-text reveal-on-scroll">
+                <span class="tech-label">// Profile Intelligence</span>
+                <h1>Optimize Your <br><span class="text-cyan">Digital Identity</span></h1>
+                <p>
+                    Submit your public profile for our organic discovery network. 
+                    We analyze visibility metrics and connect your content with genuine audiences.
+                    <br><br>
+                    <small style="color:#666;">*Strictly organic. No bots. No passwords required.</small>
+                </p>
+                
+                <div style="margin-top: 2rem; display: flex; gap: 20px; justify-content: center; @media(min-width:769px){justify-content: flex-start;}">
+                    <div>
+                        <h3 class="text-magenta">98%</h3>
+                        <span style="font-size: 0.8rem; color:#888;">Safety Score</span>
+                    </div>
+                    <div>
+                        <h3 class="text-purple">24h</h3>
+                        <span style="font-size: 0.8rem; color:#888;">Analysis Time</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card" data-tilt>
+                <div class="screw tl"></div><div class="screw tr"></div>
+                <div class="screw bl"></div><div class="screw br"></div>
+
+                <div class="avatar-frame">
+                    <img src="https://cdn3d.iconscout.com/3d/premium/thumb/woman-avatar-6299541-5187873.png" alt="User Avatar">
+                </div>
+
+                <h2 style="margin-bottom: 1.5rem;">Submit Profile</h2>
+
+                <form id="instaForm">
+                    <div class="input-wrapper">
+                        <input type="text" id="usernameInput" class="cyber-input" placeholder="@yourusername" required autocomplete="off">
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        Start Analysis
+                    </button>
+
+                    <div class="legal-check">
+                        <input type="checkbox" required>
+                        <span>I confirm this is my public profile and I authorize data analysis for networking purposes.</span>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <div class="container">
+        <div class="ad-container">
+            <span class="ad-placeholder">ADVERTISEMENT SLOT (Responsive)</span>
+        </div>
+    </div>
+
+    <div class="container section-spacer" id="how-it-works">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <span class="tech-label">// Operational Protocol</span>
+            <h2>How It Works</h2>
+        </div>
+        
+        <div class="grid-3">
+            <div class="feature-box reveal-on-scroll">
+                <div class="feature-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+                <h3>1. Submission</h3>
+                <p style="color:#aaa; font-size:0.9rem; margin-top:10px;">Enter your public username. We never ask for passwords or private login credentials.</p>
+            </div>
+            <div class="feature-box reveal-on-scroll">
+                <div class="feature-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <h3>2. Analysis</h3>
+                <p style="color:#aaa; font-size:0.9rem; margin-top:10px;">Our system scans public metrics to identify optimization opportunities for better reach.</p>
+            </div>
+            <div class="feature-box reveal-on-scroll">
+                <div class="feature-icon"><i class="fa-solid fa-network-wired"></i></div>
+                <h3>3. Networking</h3>
+                <p style="color:#aaa; font-size:0.9rem; margin-top:10px;">Your profile is indexed in our discovery pool, allowing organic users to find and connect with you.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container section-spacer" style="border-top: 1px solid var(--c-border);">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <span class="tech-label">// Knowledge Base</span>
+            <h2>Frequently Asked Questions</h2>
+        </div>
+        <div class="grid-3">
+            <div>
+                <h4 class="text-cyan">Is this safe?</h4>
+                <p style="color:#888; font-size:0.9rem;">Yes. We only use publicly available data. We strictly adhere to privacy policies and do not access your account.</p>
+            </div>
+            <div>
+                <h4 class="text-cyan">Is it free?</h4>
+                <p style="color:#888; font-size:0.9rem;">The basic analysis and directory submission are completely free to use.</p>
+            </div>
+            <div>
+                <h4 class="text-cyan">How long does it take?</h4>
+                <p style="color:#888; font-size:0.9rem;">Submission is instant. Analysis reports typically generate within 24 hours.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="ad-container">
+            <span class="ad-placeholder">ADVERTISEMENT SLOT (Responsive)</span>
+        </div>
+    </div>
+
+    <footer id="contact">
+        <div class="container">
+            <p>© 2026 <strong>Genuine Intelligence 28</strong>. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast"><i class="fa-solid fa-check-circle"></i> Submission Successful</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqrYBCTG1Z5pp1_Datg2VWe1wJxWtP9us",
+            authDomain: "gi28-admin-panel.firebaseapp.com",
+            projectId: "gi28-admin-panel"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const form = document.getElementById("instaForm");
+        const submitBtn = document.getElementById("submitBtn");
+        const toast = document.getElementById("toast");
+        const usernameInput = document.getElementById("usernameInput");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            let username = usernameInput.value.trim();
+
+            if (!username) { alert("Please enter a username"); return; }
+            if (!username.startsWith('@')) { username = '@' + username; }
+
+            // UI Loading State
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
+            submitBtn.style.opacity = "0.7";
+            submitBtn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "usernames"), {
+                    username: username,
+                    source: "website_v2",
+                    timestamp: Date.now()
+                });
+
+                // UI Success State
+                submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Added to Queue';
+                submitBtn.style.background = "linear-gradient(90deg, #00f260, #0575e6)";
+                
+                toast.classList.add("show");
+                setTimeout(() => toast.classList.remove("show"), 3000);
+
+                form.reset();
+
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.style.background = ""; 
+                    submitBtn.style.opacity = "1";
+                    submitBtn.disabled = false;
+                }, 3000);
+
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Connection Error. Please try again.");
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+
+    <script>
+        // 1. Tilt Effect
+        VanillaTilt.init(document.querySelector(".glass-card"), {
+            max: 5, speed: 400, glare: true, "max-glare": 0.1
+        });
+
+        // 2. Scroll Reveal Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateY(0)";
+                }
+            });
+        });
+
+        document.querySelectorAll('.reveal-on-scroll').forEach((el) => {
+            el.style.opacity = "0";
+            el.style.transform = "translateY(30px)";
+            el.style.transition = "all 0.8s ease-out";
+            observer.observe(el);
+        });
+
+        // 3. Three.js Background (Optimized)
+        const canvas = document.querySelector('#canvas-bg');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        canvas.appendChild(renderer.domElement);
+
+        // Particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 300; // Lower count for better mobile performance
+        const posArray = new Float32Array(particlesCount * 3);
+        
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 15;
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const material = new THREE.PointsMaterial({
+            size: 0.03, color: 0x00f2ea, transparent: true, opacity: 0.8
+        });
+        const particlesMesh = new THREE.Points(particlesGeometry, material);
+        scene.add(particlesMesh);
+
+        camera.position.z = 5;
+
+        // Animation Loop
+        const animate = () => {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.y += 0.001;
+            particlesMesh.rotation.x += 0.001;
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        // Responsive Canvas
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
